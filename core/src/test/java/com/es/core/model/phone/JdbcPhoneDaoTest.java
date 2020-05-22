@@ -6,8 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -41,9 +43,13 @@ public class JdbcPhoneDaoTest {
 
     @Test
     public void testSave() {
-        String newBrand = "save";
-        String newModel = "save";
-        Phone expectedPhone = createTestPhone(null, newBrand, newModel);
+        String brand = "save";
+        String model = "save";
+        Long colorId = 1L;
+        Set<Color> colors = new HashSet<>();
+        colors.add(createTestColor(colorId));
+        Phone expectedPhone = createTestPhone(null, brand, model);
+        expectedPhone.setColors(colors);
 
         phoneDao.save(expectedPhone);
 
@@ -51,8 +57,11 @@ public class JdbcPhoneDaoTest {
 
         if (newPhone.isPresent()) {
             Phone phone = newPhone.get();
-            assertEquals(newBrand, phone.getBrand());
-            assertEquals(newModel, phone.getModel());
+            Set<Color> updatedColors = phone.getColors();
+
+            assertEquals(brand, phone.getBrand());
+            assertEquals(model, phone.getModel());
+            assertEquals(colors, updatedColors);
         } else {
             fail();
         }
@@ -60,19 +69,26 @@ public class JdbcPhoneDaoTest {
 
     @Test
     public void testUpdate() {
-        Long id = 1L;
-        String updatedBrand = "update";
-        String updatedModel = "update";
-        Phone expectedPhone = createTestPhone(id, updatedBrand, updatedModel);
+        Long phoneId = 1L;
+        Long colorId = 1L;
+        String brand = "update";
+        String model = "update";
+        Set<Color> colors = new HashSet<>();
+        colors.add(createTestColor(colorId));
+        Phone expectedPhone = createTestPhone(phoneId, brand, model);
+        expectedPhone.setColors(colors);
 
         phoneDao.save(expectedPhone);
 
-        Optional<Phone> updatedPhone = phoneDao.get(id);
+        Optional<Phone> updatedPhone = phoneDao.get(phoneId);
 
         if (updatedPhone.isPresent()) {
             Phone phone = updatedPhone.get();
-            assertEquals(updatedBrand, phone.getBrand());
-            assertEquals(updatedModel, phone.getModel());
+            Set<Color> updatedColors = phone.getColors();
+
+            assertEquals(brand, phone.getBrand());
+            assertEquals(model, phone.getModel());
+            assertEquals(colors, updatedColors);
         } else {
             fail();
         }
@@ -86,5 +102,11 @@ public class JdbcPhoneDaoTest {
         phone.setModel(model);
 
         return phone;
+    }
+
+    private Color createTestColor(Long id) {
+        Color color = new Color();
+        color.setId(id);
+        return color;
     }
 }
