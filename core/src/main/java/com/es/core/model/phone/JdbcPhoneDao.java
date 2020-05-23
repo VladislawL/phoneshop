@@ -1,15 +1,16 @@
 package com.es.core.model.phone;
 
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,16 +18,42 @@ import java.util.Optional;
 @Component
 public class JdbcPhoneDao implements PhoneDao {
     @Resource
-    private JdbcTemplate jdbcTemplate;
+    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-        private final String UPDATE_QUERY = "update phones set brand = ?, model = ?, price = ?, displaySizeInches = ?, " +
-            "weightGr = ?, lengthMm = ?, widthMm = ?, heightMm = ?, announced = ?, deviceType = ?, " +
-            "os = ?, displayResolution = ?, pixelDensity = ?, displayTechnology = ?, backCameraMegapixels = ?, " +
-            "frontCameraMegapixels = ?, ramGb = ?, internalStorageGb = ?, batteryCapacityMah = ?, talkTimeHours = ?, " +
-            "standByTimeHours = ?, bluetooth = ?, positioning = ?, imageUrl = ?, description = ? where id = ?";
+    @Autowired
+    private PhoneRowMapper phoneRowMapper;
+
+    private final String INSERT_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
+            "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, displayTechnology, " +
+            "backCameraMegapixels, frontCameraMegapixels, ramGb, internalStorageGb, batteryCapacityMah, talkTimeHours, " +
+            "standByTimeHours, bluetooth, positioning, imageUrl, description) " +
+            "values (:id, :brand, :model, :price, :displaySizeInches, :weightGr, " +
+            ":lengthMm, :widthMm, :heightMm, :announced, :deviceType, :os, :displayResolution, :pixelDensity, :displayTechnology, " +
+            ":backCameraMegapixels, :frontCameraMegapixels, :ramGb, :internalStorageGb, :batteryCapacityMah, :talkTimeHours, " +
+            ":standByTimeHours, :bluetooth, :positioning, :imageUrl, :description)";
+
+    private final String UPDATE_QUERY = "update phones set brand = :brand, model = :model, price = :price, " +
+            "displaySizeInches = :displaySizeInches, weightGr = :weightGr, lengthMm = :lengthMm, widthMm = :widthMm, " +
+            "heightMm = :heightMm, announced = :announced, deviceType = :deviceType, os = :os, " +
+            "displayResolution = :displayResolution, pixelDensity = :pixelDensity, displayTechnology = :displayTechnology, " +
+            "backCameraMegapixels = :backCameraMegapixels, frontCameraMegapixels = :frontCameraMegapixels, ramGb = :ramGb, " +
+            "internalStorageGb = :internalStorageGb, batteryCapacityMah = :batteryCapacityMah, talkTimeHours = :talkTimeHours, " +
+            "standByTimeHours = :standByTimeHours, bluetooth = :bluetooth, positioning = :positioning, " +
+            "imageUrl = :imageUrl, description = :description where id = :id";
+
+    private final String DELETE_QUERY = "delete from phone2color where phoneId = :id";
+
+    private final String GET_QUERY = "select * from phones where phones.id = :id";
+
+    private final String JOIN_PHONE_AND_COLOR_QUERY = "insert into phone2color (phoneId, colorId) values (:phoneId, :colorId)";
 
     public Optional<Phone> get(final Long key) {
-        return Optional.of(jdbcTemplate.queryForObject("select * from phones where phones.id = ?", new PhoneRowMapper(), key));
+        try {
+            Map<String, Object> idParameter = Collections.singletonMap("id", key);
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(GET_QUERY, idParameter, phoneRowMapper));
+        } catch (Exception e) {
+            return Optional.empty();
+        }
     }
 
     public void save(final Phone phone) {
@@ -38,74 +65,38 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> findAll(int offset, int limit) {
-        return jdbcTemplate.query("select * from phones offset " + offset + " limit " + limit, new PhoneRowMapper());
+        return namedParameterJdbcTemplate.query("select * from phones offset " + offset + " limit " + limit, phoneRowMapper);
     }
 
     private void update(final Phone phone) {
-        jdbcTemplate.update(UPDATE_QUERY, phone.getBrand(), phone.getModel(), phone.getPrice(), phone.getDisplaySizeInches(),
-                phone.getWeightGr(), phone.getLengthMm(), phone.getWidthMm(), phone.getHeightMm(), phone.getAnnounced(),
-                phone.getDeviceType(), phone.getOs(), phone.getDisplayResolution(), phone.getPixelDensity(), phone.getDisplayTechnology(),
-                phone.getBackCameraMegapixels(), phone.getFrontCameraMegapixels(), phone.getRamGb(), phone.getInternalStorageGb(),
-                phone.getBatteryCapacityMah(), phone.getTalkTimeHours(), phone.getStandByTimeHours(), phone.getBluetooth(),
-                phone.getPositioning(), phone.getImageUrl(), phone.getDescription(), phone.getId());
+        Map<String, Object> idParameter = Collections.singletonMap("id", phone.getId());
+        SqlParameterSource phoneParameterSource = new BeanPropertySqlParameterSource(phone);
 
-        jdbcTemplate.update("delete from phone2color where phoneId = ?", phone.getId());
+        namedParameterJdbcTemplate.update(DELETE_QUERY, idParameter);
+        namedParameterJdbcTemplate.update(UPDATE_QUERY, phoneParameterSource);
 
-        for (Color color: phone.getColors()) {
-            jdbcTemplate.update("insert into phone2color (phoneId, colorId) values (?, ?)", phone.getId(), color.getId());
-        }
+        setPhoneColors(phone);
     }
 
     private void add(final Phone phone) {
-        SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
-                .withTableName("phones")
-                .usingGeneratedKeyColumns("id");
+        SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(phone);
+        KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("brand", phone.getBrand());
-        parameters.put("model", phone.getModel());
-        parameters.put("price", phone.getPrice());
-        parameters.put("displaySizeInches", phone.getDisplaySizeInches());
-        parameters.put("weightGr", phone.getWeightGr());
-        parameters.put("lengthMm", phone.getLengthMm());
-        parameters.put("widthMm", phone.getWidthMm());
-        parameters.put("heightMm", phone.getHeightMm());
-        parameters.put("announced", phone.getAnnounced());
-        parameters.put("deviceType", phone.getDeviceType());
-        parameters.put("os", phone.getOs());
-        parameters.put("displayResolution", phone.getDisplayResolution());
-        parameters.put("pixelDensity", phone.getPixelDensity());
-        parameters.put("displayTechnology", phone.getDisplayTechnology());
-        parameters.put("backCameraMegapixels", phone.getBackCameraMegapixels());
-        parameters.put("frontCameraMegapixels", phone.getFrontCameraMegapixels());
-        parameters.put("ramGb", phone.getRamGb());
-        parameters.put("internalStorageGb", phone.getInternalStorageGb());
-        parameters.put("batteryCapacityMah", phone.getBatteryCapacityMah());
-        parameters.put("talkTimeHours", phone.getTalkTimeHours());
-        parameters.put("standByTimeHours", phone.getStandByTimeHours());
-        parameters.put("bluetooth", phone.getBluetooth());
-        parameters.put("positioning", phone.getPositioning());
-        parameters.put("imageUrl", phone.getImageUrl());
-        parameters.put("description", phone.getDescription());
-        Long id = simpleJdbcInsert.executeAndReturnKey(parameters).longValue();
+        namedParameterJdbcTemplate.update(INSERT_QUERY, parameterSource, keyHolder);
 
-        for (Color color: phone.getColors()) {
-            jdbcTemplate.update("insert into phone2color (phoneId, colorId) values (?, ?)", id, color.getId());
-        }
+        Long id = keyHolder.getKey().longValue();
+        phone.setId(id);
+
+        setPhoneColors(phone);
     }
 
-    private class PhoneRowMapper extends BeanPropertyRowMapper<Phone> {
-        public PhoneRowMapper() {
-            super(Phone.class);
-        }
+    private void setPhoneColors(Phone phone) {
+        for (Color color: phone.getColors()) {
+            Map<String, Object> parameters = new HashMap<>();
+            parameters.put("phoneId", phone.getId());
+            parameters.put("colorId", color.getId());
 
-        @Override
-        public Phone mapRow(ResultSet rs, int rowNumber) throws SQLException {
-            Phone phone = super.mapRow(rs, rowNumber);
-            List<Color> colors = jdbcTemplate.query("select colors.* from phone2color" +
-                    " join colors on colorId = colors.id where phoneId = " + phone.getId(), new BeanPropertyRowMapper(Color.class));
-            phone.setColors(new HashSet<>(colors));
-            return phone;
+            namedParameterJdbcTemplate.update(JOIN_PHONE_AND_COLOR_QUERY, parameters);
         }
     }
 }

@@ -1,11 +1,13 @@
 package com.es.core.model.phone;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -14,14 +16,24 @@ import java.util.Set;
 import static org.junit.Assert.*;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = "classpath:context/applicationContext-core-test.xml")
-public class JdbcPhoneDaoTest {
+public class JdbcPhoneDaoIT extends AbstractDataBaseIT {
 
     @Autowired
     private JdbcPhoneDao phoneDao;
 
+    @Before
+    public void setup() throws IOException {
+        fillDataBase("test-colors.sql");
+    }
+
+    @After
+    public void clean() throws IOException {
+        cleanDataBase();
+    }
+
     @Test
-    public void testFindAll() {
+    public void shouldFindLimitedPhoneList() throws IOException {
+        fillDataBase("test-data.sql");
         int limit = 2;
         List<Phone> phones = phoneDao.findAll(0, limit);
 
@@ -33,16 +45,22 @@ public class JdbcPhoneDaoTest {
     }
 
     @Test
-    public void testGet() {
+    public void shouldGetExitingPhoneById() throws IOException {
+        fillDataBase("test-data.sql");
         Optional<Phone> phone = phoneDao.get(1L);
 
-        if (!phone.isPresent()) {
-            fail();
-        }
+        assertTrue(phone.isPresent());
     }
 
     @Test
-    public void testSave() {
+    public void shouldGetEmptyOptionalIfPhoneNotFound() {
+        Optional<Phone> phone = phoneDao.get(1L);
+
+        assertFalse(phone.isPresent());
+    }
+
+    @Test
+    public void shouldSavePhone() {
         String brand = "save";
         String model = "save";
         Long colorId = 1L;
@@ -53,7 +71,7 @@ public class JdbcPhoneDaoTest {
 
         phoneDao.save(expectedPhone);
 
-        Optional<Phone> newPhone = phoneDao.get(4L);
+        Optional<Phone> newPhone = phoneDao.get(1L);
 
         if (newPhone.isPresent()) {
             Phone phone = newPhone.get();
@@ -68,7 +86,8 @@ public class JdbcPhoneDaoTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void shouldUpdatePhone() throws IOException {
+        fillDataBase("test-data.sql");
         Long phoneId = 1L;
         Long colorId = 1L;
         String brand = "update";

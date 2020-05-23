@@ -12,7 +12,7 @@
 
     <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="${db.driver}" />
-        <property name="url" value="${db.ulr}" />
+        <property name="url" value="${db.url}" />
         <property name="username" value="${db.user}" />
         <property name="password" value="${db.password}" />
     </bean>
@@ -21,7 +21,13 @@
         <property name="dataSource" ref="dataSource" />
     </bean>
 
-    <jdbc:initialize-database enabled="true" data-source="dataSource">
+    <bean id="phoneRowMapper" class="com.es.core.model.phone.PhoneRowMapper" />
+
+    <bean id="namedParameterJdbcTemplate" class="org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate">
+        <constructor-arg name="dataSource" ref="dataSource" />
+    </bean>
+
+    <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">
         <jdbc:script location="classpath:db/schema.sql" />
     </jdbc:initialize-database>
 </beans>
