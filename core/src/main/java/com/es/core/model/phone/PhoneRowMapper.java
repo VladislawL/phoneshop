@@ -13,6 +13,8 @@ public class PhoneRowMapper extends BeanPropertyRowMapper<Phone> {
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    private BeanPropertyRowMapper colorRowMapper;
+
     public PhoneRowMapper() {
         super(Phone.class);
     }
@@ -21,8 +23,12 @@ public class PhoneRowMapper extends BeanPropertyRowMapper<Phone> {
     public Phone mapRow(ResultSet rs, int rowNumber) throws SQLException {
         Phone phone = super.mapRow(rs, rowNumber);
         List<Color> colors = namedParameterJdbcTemplate.query("select colors.* from phone2color" +
-                " join colors on colorId = colors.id where phoneId = " + phone.getId(), new BeanPropertyRowMapper(Color.class));
+                " join colors on colorId = colors.id where phoneId = " + phone.getId(), colorRowMapper);
         phone.setColors(new HashSet<>(colors));
         return phone;
+    }
+
+    public void setColorRowMapper(BeanPropertyRowMapper colorRowMapper) {
+        this.colorRowMapper = colorRowMapper;
     }
 }

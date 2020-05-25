@@ -1,6 +1,7 @@
 package com.es.core.model.phone;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -23,7 +24,7 @@ public class JdbcPhoneDao implements PhoneDao {
     @Autowired
     private PhoneRowMapper phoneRowMapper;
 
-    private final String INSERT_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
+    private final String INSERT_PHONE_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
             "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, displayTechnology, " +
             "backCameraMegapixels, frontCameraMegapixels, ramGb, internalStorageGb, batteryCapacityMah, talkTimeHours, " +
             "standByTimeHours, bluetooth, positioning, imageUrl, description) " +
@@ -32,7 +33,7 @@ public class JdbcPhoneDao implements PhoneDao {
             ":backCameraMegapixels, :frontCameraMegapixels, :ramGb, :internalStorageGb, :batteryCapacityMah, :talkTimeHours, " +
             ":standByTimeHours, :bluetooth, :positioning, :imageUrl, :description)";
 
-    private final String UPDATE_QUERY = "update phones set brand = :brand, model = :model, price = :price, " +
+    private final String UPDATE_PHONE_QUERY = "update phones set brand = :brand, model = :model, price = :price, " +
             "displaySizeInches = :displaySizeInches, weightGr = :weightGr, lengthMm = :lengthMm, widthMm = :widthMm, " +
             "heightMm = :heightMm, announced = :announced, deviceType = :deviceType, os = :os, " +
             "displayResolution = :displayResolution, pixelDensity = :pixelDensity, displayTechnology = :displayTechnology, " +
@@ -41,17 +42,17 @@ public class JdbcPhoneDao implements PhoneDao {
             "standByTimeHours = :standByTimeHours, bluetooth = :bluetooth, positioning = :positioning, " +
             "imageUrl = :imageUrl, description = :description where id = :id";
 
-    private final String DELETE_QUERY = "delete from phone2color where phoneId = :id";
+    private final String DELETE_PHONE_QUERY = "delete from phone2color where phoneId = :id";
 
-    private final String GET_QUERY = "select * from phones where phones.id = :id";
+    private final String GET_PHONE_QUERY = "select * from phones where phones.id = :id";
 
     private final String JOIN_PHONE_AND_COLOR_QUERY = "insert into phone2color (phoneId, colorId) values (:phoneId, :colorId)";
 
     public Optional<Phone> get(final Long key) {
         try {
             Map<String, Object> idParameter = Collections.singletonMap("id", key);
-            return Optional.of(namedParameterJdbcTemplate.queryForObject(GET_QUERY, idParameter, phoneRowMapper));
-        } catch (Exception e) {
+            return Optional.of(namedParameterJdbcTemplate.queryForObject(GET_PHONE_QUERY, idParameter, phoneRowMapper));
+        } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
     }
@@ -72,8 +73,8 @@ public class JdbcPhoneDao implements PhoneDao {
         Map<String, Object> idParameter = Collections.singletonMap("id", phone.getId());
         SqlParameterSource phoneParameterSource = new BeanPropertySqlParameterSource(phone);
 
-        namedParameterJdbcTemplate.update(DELETE_QUERY, idParameter);
-        namedParameterJdbcTemplate.update(UPDATE_QUERY, phoneParameterSource);
+        namedParameterJdbcTemplate.update(DELETE_PHONE_QUERY, idParameter);
+        namedParameterJdbcTemplate.update(UPDATE_PHONE_QUERY, phoneParameterSource);
 
         setPhoneColors(phone);
     }
@@ -82,7 +83,7 @@ public class JdbcPhoneDao implements PhoneDao {
         SqlParameterSource parameterSource = new BeanPropertySqlParameterSource(phone);
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        namedParameterJdbcTemplate.update(INSERT_QUERY, parameterSource, keyHolder);
+        namedParameterJdbcTemplate.update(INSERT_PHONE_QUERY, parameterSource, keyHolder);
 
         Long id = keyHolder.getKey().longValue();
         phone.setId(id);
@@ -91,7 +92,7 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     private void setPhoneColors(Phone phone) {
-        for (Color color: phone.getColors()) {
+        for (Color color : phone.getColors()) {
             Map<String, Object> parameters = new HashMap<>();
             parameters.put("phoneId", phone.getId());
             parameters.put("colorId", color.getId());
