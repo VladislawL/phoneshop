@@ -1,0 +1,15 @@
+.search-form {
+    margin: 10px 0;
+    position: relative;
+}
+
+.search-icon {
+    color: #121212;
+    position: absolute;
+    left: .5rem;
+    top: .4rem;
+}
+
+.search-box {
+    padding: 5px 30px;
+}

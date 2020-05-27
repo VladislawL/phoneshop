@@ -69,6 +69,11 @@ public class JdbcPhoneDao implements PhoneDao {
         return namedParameterJdbcTemplate.query("select * from phones offset " + offset + " limit " + limit, phoneRowMapper);
     }
 
+    public List<Phone> findAll(int offset, int limit, SortOrder sortOrder, SortField sortField) {
+        return namedParameterJdbcTemplate.query("select * from phones " + " order by " + sortField.getAttribute() +
+                " " + sortOrder.name() + " offset " + offset + " limit " + limit, phoneRowMapper);
+    }
+
     private void update(final Phone phone) {
         Map<String, Object> idParameter = Collections.singletonMap("id", phone.getId());
         SqlParameterSource phoneParameterSource = new BeanPropertySqlParameterSource(phone);
