@@ -4,11 +4,11 @@
 
 <tags:master pageTitle="Product List">
 
-  <form id="searchForm" name="searchform" action="#" method="GET" class="search-form">
+  <form method="GET" class="search-form">
     <a href="#" class="search-icon">
       <i class="fas fa-search"></i>
     </a>
-    <input id="searchInputField" name="searchInputField" type="text" placeholder="Search..." class="search-box">
+    <input id="searchInputField" name="query" type="text" placeholder="Search..." class="search-box" value="${param.query}">
   </form>
 
   <table class="table">
@@ -62,4 +62,11 @@
       </tr>
     </c:forEach>
   </table>
+  <nav aria-label="Page navigation example">
+    <ul class="pagination">
+
+      <tags:pagination currentPage="${currentPage}" pagesCount="${pagesCount}"></tags:pagination>
+
+    </ul>
+  </nav>
 </tags:master>

@@ -2,6 +2,7 @@ package com.es.core.model.phone;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -20,6 +21,9 @@ import java.util.Optional;
 public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private PhoneRowMapper phoneRowMapper;
@@ -48,6 +52,8 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private final String JOIN_PHONE_AND_COLOR_QUERY = "insert into phone2color (phoneId, colorId) values (:phoneId, :colorId)";
 
+    private final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
+
     public Optional<Phone> get(final Long key) {
         try {
             Map<String, Object> idParameter = Collections.singletonMap("id", key);
@@ -66,12 +72,20 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> findAll(int offset, int limit) {
-        return namedParameterJdbcTemplate.query("select * from phones offset " + offset + " limit " + limit, phoneRowMapper);
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("offset", offset);
+        parameters.put("limit", limit);
+        return namedParameterJdbcTemplate.query(FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY, parameters, phoneRowMapper);
     }
 
-    public List<Phone> findAll(int offset, int limit, SortOrder sortOrder, SortField sortField) {
-        return namedParameterJdbcTemplate.query("select * from phones " + " order by " + sortField.getAttribute() +
-                " " + sortOrder.name() + " offset " + offset + " limit " + limit, phoneRowMapper);
+    public List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String searchQuery, SortOrder sortOrder, SortField sortField) {
+        return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where ("  + getBrandAndModelLikeSearchQueryCondition(searchQuery) +
+                ") and stock > 0 and price > 0 order by " + sortField.getAttribute() + " " + sortOrder.name() + " offset " + offset + " limit " + limit, phoneRowMapper);
+    }
+
+    public int countPhonesWhereBrandAndModelLikeSearchQuery(String searchQuery) {
+        return jdbcTemplate.queryForObject("select count(*) from phones join stocks on id = phoneId where (" +
+                getBrandAndModelLikeSearchQueryCondition(searchQuery) + ") and stock > 0 and price > 0", Integer.class);
     }
 
     private void update(final Phone phone) {
@@ -94,6 +108,21 @@ public class JdbcPhoneDao implements PhoneDao {
         phone.setId(id);
 
         setPhoneColors(phone);
+    }
+
+    private String getBrandAndModelLikeSearchQueryCondition(String searchQuery) {
+        StringBuilder result = new StringBuilder("lower(brand) like '%" + searchQuery + "%' or lower(model) like '%" + searchQuery + "%'");
+        String[] words = searchQuery.split(" ");
+
+        for (String word : words) {
+            result.append(" or lower(brand) like '%")
+                    .append(word.toCharArray())
+                    .append("%' or lower(model) like '%")
+                    .append(word.toLowerCase())
+                    .append("%'");
+        }
+
+        return result.toString();
     }
 
     private void setPhoneColors(Phone phone) {

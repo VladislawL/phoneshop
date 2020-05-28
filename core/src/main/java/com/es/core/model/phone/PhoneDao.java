@@ -7,5 +7,6 @@ public interface PhoneDao {
     Optional<Phone> get(Long key);
     void save(Phone phone);
     List<Phone> findAll(int offset, int limit);
-    List<Phone> findAll(int offset, int limit, SortOrder sortOrder, SortField sortField);
+    List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String query, SortOrder sortOrder, SortField sortField);
+    int countPhonesWhereBrandAndModelLikeSearchQuery(String searchQuery);
 }

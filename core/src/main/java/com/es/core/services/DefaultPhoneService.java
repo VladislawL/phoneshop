@@ -16,14 +16,14 @@ public class DefaultPhoneService implements PhoneService {
     private PhoneDao phoneDao;
 
     @Override
-    public List<Phone> getPhonePage(int page, SortField sortField, SortOrder sortOrder) {
+    public List<Phone> getPhonePage(int page, String query, SortField sortField, SortOrder sortOrder) {
         int limit = 10;
         int offset = (page - 1 ) * limit;
-        return phoneDao.findAll(offset, limit, sortOrder, sortField);
+        return phoneDao.findOrderedPhoneListBySearchQuery(offset, limit, query, sortOrder, sortField);
     }
 
     @Override
-    public Phone findPhoneByBrandAndModel(String brand, String model) {
-        return null;
+    public int getPagesCount(String searchQuery) {
+        return phoneDao.countPhonesWhereBrandAndModelLikeSearchQuery(searchQuery) / 10;
     }
 }

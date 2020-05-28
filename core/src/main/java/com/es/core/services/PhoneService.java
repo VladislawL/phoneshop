@@ -7,6 +7,6 @@ import com.es.core.model.phone.SortOrder;
 import java.util.List;
 
 public interface PhoneService {
-    List<Phone> getPhonePage(int page, SortField sortField, SortOrder sortOrder);
-    Phone findPhoneByBrandAndModel(String brand, String model);
+    List<Phone> getPhonePage(int page, String query, SortField sortField, SortOrder sortOrder);
+    int getPagesCount(String searchQuery);
 }
