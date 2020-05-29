@@ -54,9 +54,12 @@
         </td>
         <td>${phone.displaySizeInches}"</td>
         <td>$ ${phone.price}</td>
-        <td><input id="${phone.id}" type="text" /></td>
         <td>
-          <input type="submit" value="Add to Cart" />
+          <input id="${phone.id}" type="text" />
+          <div class="error"></div>
+        </td>
+        <td>
+          <input name="add-to-cart" type="submit" data-phone-id="${phone.id}" value="Add to Cart" />
           <input type="hidden" value="${phone.id}" />
         </td>
       </tr>

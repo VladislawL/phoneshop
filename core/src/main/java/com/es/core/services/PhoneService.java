@@ -9,4 +9,5 @@ import java.util.List;
 public interface PhoneService {
     List<Phone> getPhonePage(int page, String query, SortField sortField, SortOrder sortOrder);
     int getPagesCount(String searchQuery);
+    Phone getPhoneById(long id);
 }

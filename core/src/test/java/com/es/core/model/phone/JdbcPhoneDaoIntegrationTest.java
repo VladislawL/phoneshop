@@ -1,8 +1,8 @@
 package com.es.core.model.phone;
 
+import com.es.core.dao.PhoneDao;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 
 import java.util.HashSet;
 import java.util.List;

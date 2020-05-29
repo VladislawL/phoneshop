@@ -1,5 +1,10 @@
-package com.es.core.model.phone;
+package com.es.core.dao;
 
+import com.es.core.model.phone.Color;
+import com.es.core.model.phone.Phone;
+import com.es.core.model.phone.PhoneRowMapper;
+import com.es.core.model.phone.SortField;
+import com.es.core.model.phone.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
