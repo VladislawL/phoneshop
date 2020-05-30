@@ -1,5 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
+import com.es.core.cart.HttpSessionCartService;
 import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import com.es.core.services.PhoneService;
@@ -18,6 +19,9 @@ public class ProductListPageController {
     @Autowired
     private PhoneService phoneService;
 
+    @Autowired
+    private HttpSessionCartService cartService;
+
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
@@ -30,6 +34,7 @@ public class ProductListPageController {
         model.addAttribute("phones", phoneService.getPhonePage(page, query, sortField, sortOrder));
         model.addAttribute("pagesCount", pagesCount);
         model.addAttribute("currentPage", page);
+        model.addAttribute("cart", cartService.getCart());
 
         return "productList";
     }

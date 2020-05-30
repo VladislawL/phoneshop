@@ -1,6 +1,7 @@
-package com.es.core.model.phone;
+package com.es.core.dao;
 
-import com.es.core.dao.PhoneDao;
+import com.es.core.model.phone.Color;
+import com.es.core.model.phone.Phone;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

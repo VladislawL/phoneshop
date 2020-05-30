@@ -18,7 +18,7 @@ $('input[name="add-to-cart"]').on("click", function() {
         },
         error: function (request, status, error) {
             var errorMessage = JSON.parse(request.responseText);
-            $quantityField.siblings(".error").text(errorMessage.errorMessage);
+            $quantityField.siblings(".error").text(errorMessage.message);
         }
     });
 });

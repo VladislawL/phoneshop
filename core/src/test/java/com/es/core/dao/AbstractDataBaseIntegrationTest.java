@@ -1,4 +1,4 @@
-package com.es.core.model.phone;
+package com.es.core.dao;
 
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;

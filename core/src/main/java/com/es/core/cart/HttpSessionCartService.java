@@ -53,7 +53,7 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        throw new UnsupportedOperationException("TODO");
+        cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
     }
 
     private BigDecimal calculateSubTotalPrice() {

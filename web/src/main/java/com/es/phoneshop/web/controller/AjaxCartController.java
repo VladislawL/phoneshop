@@ -2,8 +2,8 @@ package com.es.phoneshop.web.controller;
 
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartItem;
+import com.es.core.cart.CartItemValidationException;
 import com.es.core.cart.CartService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
@@ -26,17 +26,15 @@ public class AjaxCartController {
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<Map<String, Object>> addPhone(@RequestBody @Valid CartItem cartItem, Errors errors) {
-        if (errors.hasErrors()) {
-            Map<String, Object> errorMessage = new HashMap<>();
-            errorMessage.put("errorMessage", errors.getAllErrors().get(0).getDefaultMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-        } else {
+        if (!errors.hasErrors()) {
             cartService.addPhone(cartItem.getPhoneId(), cartItem.getQuantity());
             Cart cart = cartService.getCart();
             Map<String, Object> miniCart = new HashMap<>();
             miniCart.put("subTotalPrice", cart.getSubTotalPrice().toString());
             miniCart.put("itemsNumber", cart.getCartItems().size());
             return ResponseEntity.ok(miniCart);
+        } else {
+            throw new CartItemValidationException(errors.getAllErrors().get(0).getDefaultMessage());
         }
     }
 }

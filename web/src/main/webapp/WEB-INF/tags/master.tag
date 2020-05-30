@@ -23,8 +23,8 @@
         <a href="#">
             <div class="mini-cart">
                 <i class="fas fa-shopping-cart"></i>
-                <span id="items-number">items</span>
-                <span id="subtotal-price">$0</span>
+                <span id="items-number">${cart.cartItems.size()} items</span>
+                <span id="subtotal-price">$${cart.subTotalPrice}</span>
             </div>
         </a>
     </nav>
