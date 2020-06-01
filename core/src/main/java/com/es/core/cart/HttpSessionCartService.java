@@ -40,20 +40,21 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void update(Map<Long, Long> items) {
-        for (Long phoneId: items.keySet()) {
+        for (Long phoneId : items.keySet()) {
             Optional<CartItem> cartItem = findCartItem(phoneId);
             if (cartItem.isPresent()) {
                 cartItem.get().setQuantity(items.get(phoneId));
+                cart.setSubTotalPrice(calculateSubTotalPrice());
             } else {
                 addPhone(phoneId, items.get(phoneId));
             }
         }
-        cart.setSubTotalPrice(calculateSubTotalPrice());
     }
 
     @Override
     public void remove(Long phoneId) {
         cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
+        cart.setSubTotalPrice(calculateSubTotalPrice());
     }
 
     private BigDecimal calculateSubTotalPrice() {

@@ -84,7 +84,7 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String searchQuery, SortOrder sortOrder, SortField sortField) {
-        return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where ("  + getBrandAndModelLikeSearchQueryCondition(searchQuery) +
+        return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where (" + getBrandAndModelLikeSearchQueryCondition(searchQuery) +
                 ") and stock > 0 and price > 0 order by " + sortField.getAttribute() + " " + sortOrder.name() + " offset " + offset + " limit " + limit, phoneRowMapper);
     }
 
@@ -116,12 +116,13 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     private String getBrandAndModelLikeSearchQueryCondition(String searchQuery) {
-        StringBuilder result = new StringBuilder("lower(brand) like '%" + searchQuery + "%' or lower(model) like '%" + searchQuery + "%'");
+        StringBuilder result = new StringBuilder("lower(brand) like '%" + searchQuery.toLowerCase() +
+                "%' or lower(model) like '%" + searchQuery.toLowerCase() + "%'");
         String[] words = searchQuery.split(" ");
 
         for (String word : words) {
             result.append(" or lower(brand) like '%")
-                    .append(word.toCharArray())
+                    .append(word.toLowerCase())
                     .append("%' or lower(model) like '%")
                     .append(word.toLowerCase())
                     .append("%'");

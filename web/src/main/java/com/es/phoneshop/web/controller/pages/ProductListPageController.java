@@ -1,5 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
+import com.es.core.cart.CartService;
 import com.es.core.cart.HttpSessionCartService;
 import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
@@ -13,14 +14,14 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping (value = "/productList")
+@RequestMapping(value = "/productList")
 public class ProductListPageController {
 
     @Autowired
     private PhoneService phoneService;
 
     @Autowired
-    private HttpSessionCartService cartService;
+    private CartService cartService;
 
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(

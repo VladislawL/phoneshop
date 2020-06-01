@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class StockValidator implements
-        ConstraintValidator<QuantityConstraint, Object> {
+public class StockValidator implements ConstraintValidator<QuantityConstraint, Object> {
 
     @Autowired
     private StockDao stockDao;
@@ -28,8 +27,12 @@ public class StockValidator implements
         long phoneId = (long) beanWrapper.getPropertyValue(this.phoneId);
         long quantity = (long) beanWrapper.getPropertyValue(this.quantity);
 
-        int stock = stockDao.getStock(phoneId);
+        long stock = stockDao.getStock(phoneId);
 
         return quantity <= stock;
+    }
+
+    public void setStockDao(StockDao stockDao) {
+        this.stockDao = stockDao;
     }
 }

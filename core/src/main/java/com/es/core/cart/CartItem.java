@@ -5,6 +5,7 @@ import com.es.core.validators.QuantityConstraint;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Positive;
 import java.io.Serializable;
+import java.util.Objects;
 
 @QuantityConstraint(phoneId = "phoneId", quantity = "quantity")
 public class CartItem implements Serializable {
@@ -13,7 +14,7 @@ public class CartItem implements Serializable {
     private long phoneId;
 
     @NotNull
-    @Positive
+    @Positive(message = "must be a positive number")
     private long quantity;
 
     public CartItem() {
@@ -38,5 +39,19 @@ public class CartItem implements Serializable {
 
     public void setQuantity(long quantity) {
         this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        CartItem cartItem = (CartItem) o;
+        return phoneId == cartItem.phoneId &&
+                quantity == cartItem.quantity;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(phoneId, quantity);
     }
 }

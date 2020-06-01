@@ -2,8 +2,11 @@ package com.es.core.dao;
 
 import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
+import com.es.core.model.phone.SortField;
+import com.es.core.model.phone.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.jdbc.Sql;
 
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +27,7 @@ public class JdbcPhoneDaoIntegrationTest extends AbstractDataBaseIntegrationTest
         List<Phone> phones = phoneDao.findAll(0, limit);
 
         assertThat(phones).isNotNull()
-                .hasSize(2)
+                .hasSizeLessThanOrEqualTo(limit)
                 .allMatch(Objects::nonNull);
     }
 
@@ -83,6 +86,32 @@ public class JdbcPhoneDaoIntegrationTest extends AbstractDataBaseIntegrationTest
                 .matches(phone -> phone.getBrand().equals(brand))
                 .matches(phone -> phone.getModel().equals(model))
                 .matches(phone -> phone.getColors().equals(colors));
+    }
+
+    @Test
+    @Sql("classpath:/db/search-test-data.sql")
+    public void shouldFindPhoneListBySearchQuery() {
+        String searchQuery = "brand model";
+        SortOrder sortOrder = SortOrder.DESC;
+        SortField sortField = SortField.PRICE;
+        int offset = 0;
+        int limit = 2;
+
+        List<Phone> phones = phoneDao.findOrderedPhoneListBySearchQuery(offset, limit, searchQuery, sortOrder, sortField);
+
+        assertThat(phones)
+                .hasSizeLessThanOrEqualTo(limit)
+                .allMatch(phone -> (phone.getBrand() + " " + phone.getModel()).contains(searchQuery));
+    }
+
+    @Test
+    @Sql("classpath:/db/search-test-data.sql")
+    public void shouldGetNumberOfPhonesThatLikeSearchQuery() {
+        String searchQuery = "brand model";
+
+        int n = phoneDao.countPhonesWhereBrandAndModelLikeSearchQuery(searchQuery);
+
+        assertThat(n).isEqualTo(3);
     }
 
     private Phone createTestPhone(Long id, String brand, String model) {

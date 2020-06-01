@@ -8,3 +8,5 @@ insert into phones (id, brand, model) values ('3', 'test3', 'test3');
 insert into phone2color (phoneId, colorId) values (1, 1);
 insert into phone2color (phoneId, colorId) values (2, 2);
 insert into phone2color (phoneId, colorId) values (3, 2);
+
+insert into stocks (phoneId, stock, reserved) values (1, 5, 0);

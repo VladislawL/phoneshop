@@ -1,4 +1,5 @@
 package com.es.core.dao;
+
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +16,7 @@ public class JdbcStockDao implements StockDao {
     private final String GET_PHONE_STOCK = "select stock from stocks where phoneId = :phoneId";
 
     @Override
-    public int getStock(long phoneId) {
+    public long getStock(long phoneId) {
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("phoneId", phoneId);
 
