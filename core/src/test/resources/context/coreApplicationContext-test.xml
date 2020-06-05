@@ -3,17 +3,9 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <import resource="classpath:context/applicationContext-core.xml"/>
-    <import resource="classpath:context/applicationContext-demoda.xml"/>
-
-    <bean id="webAppConfig" class="com.es.phoneshop.web.config.WebAppConfig" />
-
     <bean id="propertySourceConfigurer" class="com.es.core.config.PropertySourceConfigurer">
         <property name="propertySourceList">
             <list>
-                <bean class="org.springframework.core.io.support.ResourcePropertySource">
-                    <constructor-arg value="classpath:config/sortFields.properties" />
-                </bean>
                 <bean class="org.springframework.core.io.support.ResourcePropertySource">
                     <constructor-arg value="classpath:config/webApplication.properties" />
                 </bean>

@@ -3,8 +3,6 @@ package com.es.phoneshop.web.controller.pages;
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.Phone;
-import com.es.core.dao.PhoneDao;
-import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import com.es.core.services.PhoneService;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -47,7 +44,7 @@ public class ProductListPageControllerTest {
         int pagesCount = 1;
         int currentPage = 1;
         String query = "test";
-        SortField sortField = SortField.PRICE;
+        String sortField = "price";
         SortOrder sortOrder = SortOrder.DESC;
         Cart cart = new Cart();
 
@@ -63,7 +60,7 @@ public class ProductListPageControllerTest {
 
         mockMvc.perform(get("/productList")
                 .param("query", query)
-                .param("sortField", sortField.name())
+                .param("sortField", sortField)
                 .param("sortOrder", sortOrder.name())
                 .param("page", Integer.toString(currentPage)))
                 .andExpect(view().name("productList"))

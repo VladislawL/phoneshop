@@ -7,6 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @Transactional
-@ContextConfiguration(locations = "classpath:context/applicationContext-core.xml")
+@ContextConfiguration(locations = {"classpath:context/applicationContext-core.xml", "classpath:context/coreApplicationContext-test.xml"})
 public abstract class AbstractDataBaseIntegrationTest {
 }

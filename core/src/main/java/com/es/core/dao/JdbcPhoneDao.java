@@ -3,11 +3,10 @@ package com.es.core.dao;
 import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneRowMapper;
-import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -27,13 +26,13 @@ public class JdbcPhoneDao implements PhoneDao {
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
-    @Resource
-    private JdbcTemplate jdbcTemplate;
-
     @Autowired
     private PhoneRowMapper phoneRowMapper;
 
-    private final String INSERT_PHONE_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
+    @Autowired
+    private Environment environment;
+
+    private static final String INSERT_PHONE_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
             "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, displayTechnology, " +
             "backCameraMegapixels, frontCameraMegapixels, ramGb, internalStorageGb, batteryCapacityMah, talkTimeHours, " +
             "standByTimeHours, bluetooth, positioning, imageUrl, description) " +
@@ -42,7 +41,7 @@ public class JdbcPhoneDao implements PhoneDao {
             ":backCameraMegapixels, :frontCameraMegapixels, :ramGb, :internalStorageGb, :batteryCapacityMah, :talkTimeHours, " +
             ":standByTimeHours, :bluetooth, :positioning, :imageUrl, :description)";
 
-    private final String UPDATE_PHONE_QUERY = "update phones set brand = :brand, model = :model, price = :price, " +
+    private static final String UPDATE_PHONE_QUERY = "update phones set brand = :brand, model = :model, price = :price, " +
             "displaySizeInches = :displaySizeInches, weightGr = :weightGr, lengthMm = :lengthMm, widthMm = :widthMm, " +
             "heightMm = :heightMm, announced = :announced, deviceType = :deviceType, os = :os, " +
             "displayResolution = :displayResolution, pixelDensity = :pixelDensity, displayTechnology = :displayTechnology, " +
@@ -51,13 +50,13 @@ public class JdbcPhoneDao implements PhoneDao {
             "standByTimeHours = :standByTimeHours, bluetooth = :bluetooth, positioning = :positioning, " +
             "imageUrl = :imageUrl, description = :description where id = :id";
 
-    private final String DELETE_PHONE_QUERY = "delete from phone2color where phoneId = :id";
+    private static final String DELETE_PHONE_QUERY = "delete from phone2color where phoneId = :id";
 
-    private final String GET_PHONE_QUERY = "select * from phones where phones.id = :id";
+    private static final String GET_PHONE_QUERY = "select * from phones where phones.id = :id";
 
-    private final String JOIN_PHONE_AND_COLOR_QUERY = "insert into phone2color (phoneId, colorId) values (:phoneId, :colorId)";
+    private static final String JOIN_PHONE_AND_COLOR_QUERY = "insert into phone2color (phoneId, colorId) values (:phoneId, :colorId)";
 
-    private final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
+    private static final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
 
     public Optional<Phone> get(final Long key) {
         try {
@@ -83,14 +82,34 @@ public class JdbcPhoneDao implements PhoneDao {
         return namedParameterJdbcTemplate.query(FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY, parameters, phoneRowMapper);
     }
 
-    public List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String searchQuery, SortOrder sortOrder, SortField sortField) {
-        return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where (" + getBrandAndModelLikeSearchQueryCondition(searchQuery) +
-                ") and stock > 0 and price > 0 order by " + sortField.getAttribute() + " " + sortOrder.name() + " offset " + offset + " limit " + limit, phoneRowMapper);
+    public List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String searchQuery, String sortField, SortOrder sortOrder) {
+        Map<String, Object> wordsParameter = getWordsMapFromSearchQuery(searchQuery);
+        Map<String, Object> parameters = new HashMap<>(wordsParameter);
+        parameters.put("offset", offset);
+        parameters.put("limit", limit);
+        parameters.put("searchQuery", searchQuery);
+
+        if (sortOrder == null) {
+            sortOrder = SortOrder.DESC;
+        }
+
+        if (sortField == null) {
+            sortField = "price";
+        }
+
+        return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where ("
+                + getBrandAndModelLikeSearchQueryCondition(wordsParameter.size()) + ") and stock > 0 and price > 0 order by "
+                + environment.getProperty(sortField) + " " + sortOrder.name() + " offset :offset limit :limit", parameters, phoneRowMapper);
     }
 
     public int countPhonesWhereBrandAndModelLikeSearchQuery(String searchQuery) {
-        return jdbcTemplate.queryForObject("select count(*) from phones join stocks on id = phoneId where (" +
-                getBrandAndModelLikeSearchQueryCondition(searchQuery) + ") and stock > 0 and price > 0", Integer.class);
+        Map<String, Object> wordsParameter = getWordsMapFromSearchQuery(searchQuery);
+        Map<String, Object> parameters = new HashMap<>(wordsParameter);
+        parameters.put("searchQuery", searchQuery);
+
+       return namedParameterJdbcTemplate.queryForObject("select count(*) from phones join stocks on id = phoneId where ("
+               + getBrandAndModelLikeSearchQueryCondition(wordsParameter.size()) + ") and stock > 0 and price > 0",
+               parameters, Integer.class);
     }
 
     private void update(final Phone phone) {
@@ -115,20 +134,28 @@ public class JdbcPhoneDao implements PhoneDao {
         setPhoneColors(phone);
     }
 
-    private String getBrandAndModelLikeSearchQueryCondition(String searchQuery) {
-        StringBuilder result = new StringBuilder("lower(brand) like '%" + searchQuery.toLowerCase() +
-                "%' or lower(model) like '%" + searchQuery.toLowerCase() + "%'");
-        String[] words = searchQuery.split(" ");
+    private String getBrandAndModelLikeSearchQueryCondition(int wordsNumber) {
+        StringBuilder result = new StringBuilder("lower(brand) like :searchQuery");
 
-        for (String word : words) {
-            result.append(" or lower(brand) like '%")
-                    .append(word.toLowerCase())
-                    .append("%' or lower(model) like '%")
-                    .append(word.toLowerCase())
-                    .append("%'");
+        for (int i = 0; i < wordsNumber; i++) {
+            result.append(" or lower(brand) like ")
+                    .append(":word").append(i)
+                    .append(" or lower(model) like ")
+                    .append(":word").append(i);
         }
 
         return result.toString();
+    }
+
+    private Map<String, Object> getWordsMapFromSearchQuery(String searchQuery) {
+        Map<String, Object> result = new HashMap<>();
+        String[] words = searchQuery.split(" ");
+
+        for (int i = 0; i < words.length; i++) {
+            result.put("word" + i, "%" + words[i] + "%");
+        }
+
+        return result;
     }
 
     private void setPhoneColors(Phone phone) {

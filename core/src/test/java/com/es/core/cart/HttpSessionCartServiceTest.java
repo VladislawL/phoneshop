@@ -1,7 +1,8 @@
 package com.es.core.cart;
 
-import com.es.core.model.phone.Phone;
-import com.es.core.services.PhoneService;
+import com.es.core.services.PriceCalculator;
+import com.es.core.services.StockService;
+import com.es.core.validators.QuantityValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,6 +16,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,13 @@ public class HttpSessionCartServiceTest {
     private Cart cart;
 
     @Mock
-    private PhoneService phoneService;
+    private PriceCalculator priceCalculatorService;
+
+    @Mock
+    private StockService stockService;
+
+    @Mock
+    private QuantityValidator quantityValidator;
 
     @Spy
     private List<CartItem> cartItems;
@@ -47,19 +55,17 @@ public class HttpSessionCartServiceTest {
         long quantity = 1L;
         cartItems = new ArrayList<>();
         cartItems.add(new CartItem(phoneId, quantity));
-        Phone phone = createTestPhone(phoneId, BigDecimal.ONE);
 
         when(cart.getCartItems()).thenReturn(cartItems);
-        when(phoneService.getPhoneById(Mockito.eq(phoneId))).thenReturn(phone);
     }
 
     @Test
     public void shouldAddCartItemIfNotExist() {
         long phoneId = 2L;
         long quantity = 1L;
-        Phone phone = createTestPhone(phoneId, BigDecimal.ONE);
 
-        when(phoneService.getPhoneById(Mockito.eq(phoneId))).thenReturn(phone);
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
+        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(2));
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
@@ -70,10 +76,36 @@ public class HttpSessionCartServiceTest {
                 .contains(new CartItem(phoneId, quantity));
     }
 
+    @Test(expected = QuantityValidationException.class)
+    public void shouldThrowQuantityValidationExceptionIfQuantityGreaterThenStockInAddPhone() {
+        long phoneId = 2L;
+        long quantity = 100L;
+
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(false);
+        when(stockService.getStock(Mockito.anyLong())).thenReturn(0L);
+
+        httpSessionCartService.addPhone(phoneId, quantity);
+    }
+
+    @Test(expected = QuantityValidationException.class)
+    public void shouldThrowQuantityValidationExceptionIfQuantityGreaterThenStockInUpdatePhone() {
+        long phoneId = 2L;
+        long quantity = 100L;
+        Map<Long, Long> cartItem = Collections.singletonMap(phoneId, quantity);
+
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(false);
+        when(stockService.getStock(Mockito.anyLong())).thenReturn(0L);
+
+        httpSessionCartService.updatePhone(cartItem);
+    }
+
     @Test
     public void shouldUpdateCartItemIfExistInAddPhoneMethod() {
         long phoneId = 1L;
         long quantity = 3L;
+
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
+        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(3));
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
@@ -91,7 +123,10 @@ public class HttpSessionCartServiceTest {
         Map<Long, Long> cartItem = new HashMap<>();
         cartItem.put(phoneId, quantity);
 
-        httpSessionCartService.update(cartItem);
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
+        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(3));
+
+        httpSessionCartService.updatePhone(cartItem);
 
         verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
         assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(3);
@@ -106,11 +141,11 @@ public class HttpSessionCartServiceTest {
         long quantity = 1L;
         Map<Long, Long> cartItem = new HashMap<>();
         cartItem.put(phoneId, quantity);
-        Phone phone = createTestPhone(phoneId, BigDecimal.ONE);
 
-        when(phoneService.getPhoneById(Mockito.eq(phoneId))).thenReturn(phone);
+        when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
+        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(2));
 
-        httpSessionCartService.update(cartItem);
+        httpSessionCartService.updatePhone(cartItem);
 
         verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
         assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(2);
@@ -123,18 +158,13 @@ public class HttpSessionCartServiceTest {
     public void shouldRemovePhone() {
         long phoneId = 1L;
 
+        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(0));
+
         httpSessionCartService.remove(phoneId);
 
         verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
         assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(0);
         assertThat(cartItems).asList()
                 .hasSize(0);
-    }
-
-    private Phone createTestPhone(long phoneId, BigDecimal price) {
-        Phone phone = new Phone();
-        phone.setId(phoneId);
-        phone.setPrice(price);
-        return phone;
     }
 }

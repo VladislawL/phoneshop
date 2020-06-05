@@ -17,24 +17,24 @@
       <th>Image</th>
       <th>
         Brand
-        <tags:sortLink field="BRAND" order="DESC" />
-        <tags:sortLink field="BRAND" order="ASC" />
+        <tags:sortLink field="brand" order="DESC" />
+        <tags:sortLink field="brand" order="ASC" />
       </th>
       <th>
         Model
-        <tags:sortLink field="MODEL" order="DESC" />
-        <tags:sortLink field="MODEL" order="ASC" />
+        <tags:sortLink field="model" order="DESC" />
+        <tags:sortLink field="model" order="ASC" />
       </th>
       <th>Colors</th>
       <th>
         Display size
-        <tags:sortLink field="DISPLAY_SIZE_INCHES" order="DESC" />
-        <tags:sortLink field="DISPLAY_SIZE_INCHES" order="ASC" />
+        <tags:sortLink field="displaySizeInches" order="DESC" />
+        <tags:sortLink field="displaySizeInches" order="ASC" />
       </th>
       <th>
         Price
-        <tags:sortLink field="PRICE" order="DESC" />
-        <tags:sortLink field="PRICE" order="ASC" />
+        <tags:sortLink field="price" order="DESC" />
+        <tags:sortLink field="price" order="ASC" />
       </th>
       <th>Quantity</th>
       <th>Action</th>

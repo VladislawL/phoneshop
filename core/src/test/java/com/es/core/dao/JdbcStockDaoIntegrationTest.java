@@ -1,5 +1,6 @@
 package com.es.core.dao;
 
+import com.es.core.model.phone.Stock;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -15,8 +16,10 @@ public class JdbcStockDaoIntegrationTest extends AbstractDataBaseIntegrationTest
         long phoneId = 1L;
         long expectedStock = 5;
 
-        long stock = stockDao.getStock(phoneId);
+        Stock stock = stockDao.getStock(phoneId);
 
-        assertThat(expectedStock).isEqualTo(stock);
+        assertThat(stock)
+                .matches(s -> s.getPhone().getId().equals(phoneId))
+                .matches(s -> s.getStock() == expectedStock);
     }
 }

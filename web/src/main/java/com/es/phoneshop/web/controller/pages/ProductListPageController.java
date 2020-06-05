@@ -1,8 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.CartService;
-import com.es.core.cart.HttpSessionCartService;
-import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import com.es.core.services.PhoneService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +24,7 @@ public class ProductListPageController {
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
-            @RequestParam(value = "sortField", required = false, defaultValue = "PRICE") SortField sortField,
+            @RequestParam(value = "sortField", required = false, defaultValue = "price") String sortField,
             @RequestParam(value = "sortOrder", required = false, defaultValue = "DESC") SortOrder sortOrder,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             Model model) {

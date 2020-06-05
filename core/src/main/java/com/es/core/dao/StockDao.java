@@ -1,5 +1,7 @@
 package com.es.core.dao;
 
+import com.es.core.model.phone.Stock;
+
 public interface StockDao {
-    long getStock(long phoneId);
+    Stock getStock(long phoneId);
 }

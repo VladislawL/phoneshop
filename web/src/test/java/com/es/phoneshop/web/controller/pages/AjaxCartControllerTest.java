@@ -14,8 +14,6 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.math.BigDecimal;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -23,7 +21,7 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 
 @RunWith(SpringRunner.class)
 @WebAppConfiguration
-@ContextConfiguration(locations = {"classpath:context/applicationContext.xml", "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml"})
+@ContextConfiguration(locations = {"file:src/main/webapp/WEB-INF/applicationContext.xml", "file:src/main/webapp/WEB-INF/dispatcher-servlet.xml"})
 public class AjaxCartControllerTest {
 
     @Autowired
@@ -49,7 +47,7 @@ public class AjaxCartControllerTest {
                 .content(jsonCartItem)
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.subTotalPrice", equalTo(BigDecimal.ONE + ".0")))
+                .andExpect(jsonPath("$.subTotalPrice", equalTo(1.0)))
                 .andExpect(jsonPath("$.itemsNumber", equalTo(1)));
     }
 

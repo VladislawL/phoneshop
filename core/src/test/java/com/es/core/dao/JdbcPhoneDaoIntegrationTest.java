@@ -2,7 +2,6 @@ package com.es.core.dao;
 
 import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
-import com.es.core.model.phone.SortField;
 import com.es.core.model.phone.SortOrder;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,14 +92,14 @@ public class JdbcPhoneDaoIntegrationTest extends AbstractDataBaseIntegrationTest
     public void shouldFindPhoneListBySearchQuery() {
         String searchQuery = "brand model";
         SortOrder sortOrder = SortOrder.DESC;
-        SortField sortField = SortField.PRICE;
+        String sortField = "price";
         int offset = 0;
         int limit = 2;
 
-        List<Phone> phones = phoneDao.findOrderedPhoneListBySearchQuery(offset, limit, searchQuery, sortOrder, sortField);
+        List<Phone> phones = phoneDao.findOrderedPhoneListBySearchQuery(offset, limit, searchQuery, sortField, sortOrder);
 
         assertThat(phones)
-                .hasSizeLessThanOrEqualTo(limit)
+                .hasSizeBetween(1, limit)
                 .allMatch(phone -> (phone.getBrand() + " " + phone.getModel()).contains(searchQuery));
     }
 
