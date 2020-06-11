@@ -3,12 +3,10 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <bean id="propertySourceConfigurer" class="com.es.core.config.PropertySourceConfigurer">
-        <property name="propertySourceList">
+    <bean id="propertySource" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
             <list>
-                <bean class="org.springframework.core.io.support.ResourcePropertySource">
-                    <constructor-arg value="classpath:config/webApplication.properties" />
-                </bean>
+                <value>classpath:config/webApplication.properties</value>
             </list>
         </property>
     </bean>

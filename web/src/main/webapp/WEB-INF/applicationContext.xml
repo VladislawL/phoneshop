@@ -6,17 +6,10 @@
     <import resource="classpath:context/applicationContext-core.xml"/>
     <import resource="classpath:context/applicationContext-demoda.xml"/>
 
-    <bean id="webAppConfig" class="com.es.phoneshop.web.config.WebAppConfig" />
-
-    <bean id="propertySourceConfigurer" class="com.es.core.config.PropertySourceConfigurer">
-        <property name="propertySourceList">
+    <bean id="propertySource" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="locations">
             <list>
-                <bean class="org.springframework.core.io.support.ResourcePropertySource">
-                    <constructor-arg value="classpath:config/sortFields.properties" />
-                </bean>
-                <bean class="org.springframework.core.io.support.ResourcePropertySource">
-                    <constructor-arg value="classpath:config/webApplication.properties" />
-                </bean>
+                <value>classpath:config/webApplication.properties</value>
             </list>
         </property>
     </bean>

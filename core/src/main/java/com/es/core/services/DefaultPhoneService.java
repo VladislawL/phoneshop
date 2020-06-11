@@ -4,8 +4,7 @@ import com.es.core.model.phone.Phone;
 import com.es.core.dao.PhoneDao;
 import com.es.core.model.phone.PhoneNotFoundException;
 import com.es.core.model.phone.SortOrder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -18,12 +17,8 @@ public class DefaultPhoneService implements PhoneService {
     @Resource
     private PhoneDao phoneDao;
 
+    @Value("#{propertySource['phonesOnPage']}")
     private int phonesOnPage;
-
-    @Autowired
-    public DefaultPhoneService(Environment environment) {
-        phonesOnPage = Integer.parseInt(environment.getProperty("phonesOnPage"));
-    }
 
     @Override
     public List<Phone> getPhonePage(int page, String query, String sortField, SortOrder sortOrder) {

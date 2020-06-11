@@ -21,7 +21,7 @@ public class DefaultPhoneServiceTest {
     @Autowired
     private DefaultPhoneService phoneService;
 
-    @Value("${phonesOnPage}")
+    @Value("#{propertySource['phonesOnPage']}")
     private int phonesOnPage;
 
     @Test

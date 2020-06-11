@@ -2,6 +2,7 @@
 <%@ attribute name="pageTitle" required="true" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <!doctype html>
 <html lang="en">
@@ -23,8 +24,8 @@
         <a href="#">
             <div class="mini-cart">
                 <i class="fas fa-shopping-cart"></i>
-                <span id="items-number">${cart.cartItems.size()} items</span>
-                <span id="subtotal-price">$${cart.subTotalPrice}</span>
+                <span id="items-number"><c:out value="${cart.cartItems.size()}"/> items</span>
+                <span id="subtotal-price"><fmt:formatNumber type="currency" currencySymbol="${currencySymbol}" value="${cart.subTotalPrice}"/></span>
             </div>
         </a>
     </nav>

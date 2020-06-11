@@ -3,5 +3,5 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:master pageTitle="Product List">
-    ${pageContext.exception.message}
+    <c:out value="${pageContext.exception.message}" />
 </tags:master>

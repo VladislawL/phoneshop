@@ -4,8 +4,8 @@ import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneRowMapper;
 import com.es.core.model.phone.SortOrder;
+import com.es.core.services.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -30,7 +30,7 @@ public class JdbcPhoneDao implements PhoneDao {
     private PhoneRowMapper phoneRowMapper;
 
     @Autowired
-    private Environment environment;
+    private PropertyService sortFieldPropertyService;
 
     private static final String INSERT_PHONE_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
             "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, displayTechnology, " +
@@ -93,13 +93,9 @@ public class JdbcPhoneDao implements PhoneDao {
             sortOrder = SortOrder.DESC;
         }
 
-        if (sortField == null) {
-            sortField = "price";
-        }
-
         return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where ("
                 + getBrandAndModelLikeSearchQueryCondition(wordsParameter.size()) + ") and stock > 0 and price > 0 order by "
-                + environment.getProperty(sortField) + " " + sortOrder.name() + " offset :offset limit :limit", parameters, phoneRowMapper);
+                + sortFieldPropertyService.getProperty(sortField) + " " + sortOrder.name() + " offset :offset limit :limit", parameters, phoneRowMapper);
     }
 
     public int countPhonesWhereBrandAndModelLikeSearchQuery(String searchQuery) {
@@ -152,7 +148,7 @@ public class JdbcPhoneDao implements PhoneDao {
         String[] words = searchQuery.split(" ");
 
         for (int i = 0; i < words.length; i++) {
-            result.put("word" + i, "%" + words[i] + "%");
+            result.put("word" + i, "%" + words[i].toLowerCase() + "%");
         }
 
         return result;

@@ -5,31 +5,37 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class MiniCart {
 
-    private Map<String, Object> miniCart;
+    private String subTotalPrice;
+    private int itemsNumber;
 
     public MiniCart() {
-        miniCart = new HashMap<>();
-        miniCart.put("itemsNumber", 0);
-        miniCart.put("subTotalPrice", BigDecimal.ZERO);
+        subTotalPrice = BigDecimal.ZERO.toString();
+        itemsNumber = 0;
+    }
+
+    public MiniCart(String subTotalPrice, int itemsNumber) {
+        this.subTotalPrice = subTotalPrice;
+        this.itemsNumber = itemsNumber;
     }
 
     public void setItemsNumber(int n) {
-        miniCart.put("itemsNumber", n);
+        itemsNumber = n;
     }
 
-    public void setSubTotalPrice(BigDecimal subTotalPrice) {
-        miniCart.put("subTotalPrice", subTotalPrice);
+    public int getItemsNumber() {
+        return itemsNumber;
     }
 
-    public Map<String, Object> getMiniCart() {
-        return miniCart;
+    public String getSubTotalPrice() {
+        return subTotalPrice;
     }
 
+    public void setSubTotalPrice(String subTotalPrice) {
+        this.subTotalPrice = subTotalPrice;
+    }
 }

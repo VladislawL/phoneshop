@@ -1,6 +1,5 @@
 package com.es.core.validators;
 
-import com.es.core.cart.CartItem;
 import com.es.core.services.StockService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

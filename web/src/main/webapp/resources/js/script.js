@@ -13,7 +13,7 @@ $('input[name="add-to-cart"]').on("click", function() {
         }),
         success: function (msg) {
             $("#items-number").text(msg.itemsNumber + " items");
-            $("#subtotal-price").text("$" + msg.subTotalPrice);
+            $("#subtotal-price").text(msg.subTotalPrice);
             $quantityField.siblings(".error").text("");
         },
         error: function (request, status, error) {

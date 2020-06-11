@@ -3,6 +3,9 @@ package com.es.phoneshop.web.controller.pages;
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.SortOrder;
 import com.es.core.services.PhoneService;
+import com.es.core.services.PropertyService;
+import com.es.core.utils.PriceFormatter;
+import com.es.phoneshop.web.pagedata.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +24,12 @@ public class ProductListPageController {
     @Autowired
     private CartService cartService;
 
+    @Autowired
+    private PropertyService sortFieldPropertyService;
+
+    @Autowired
+    private PriceFormatter priceFormatter;
+
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(
             @RequestParam(value = "query", required = false, defaultValue = "") String query,
@@ -30,10 +39,15 @@ public class ProductListPageController {
             Model model) {
         int pagesCount = phoneService.getPagesCount(query);
 
-        model.addAttribute("phones", phoneService.getPhonePage(page, query, sortField, sortOrder));
-        model.addAttribute("pagesCount", pagesCount);
-        model.addAttribute("currentPage", page);
+        PaginationData paginationData = new PaginationData();
+        paginationData.setCurrentPage(page);
+        paginationData.setPagesCount(pagesCount);
+        paginationData.setPhones(phoneService.getPhonePage(page, query, sortField, sortOrder));
+
+        model.addAttribute("paginationData", paginationData);
         model.addAttribute("cart", cartService.getCart());
+        model.addAttribute("sortedFields", sortFieldPropertyService.getAllProperties());
+        model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
 
         return "productList";
     }
