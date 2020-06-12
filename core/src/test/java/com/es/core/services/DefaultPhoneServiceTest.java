@@ -15,13 +15,13 @@ import java.util.List;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:context/applicationContext-core.xml", "classpath:context/coreApplicationContext-test.xml"})
+@ContextConfiguration(locations = {"classpath:context/applicationContext-core.xml"})
 public class DefaultPhoneServiceTest {
 
     @Autowired
     private DefaultPhoneService phoneService;
 
-    @Value("#{propertySource['phonesOnPage']}")
+    @Value("${phonesOnPage}")
     private int phonesOnPage;
 
     @Test

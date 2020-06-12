@@ -15,42 +15,17 @@
   <table class="table">
     <thead class="thead-light">
     <tr>
-      <th>Image</th>
-      <th>
-        Brand
-        <c:if test="${sortedFields.contains('brand')}" >
-          <tags:sortLink field="brand" order="DESC" />
-          <tags:sortLink field="brand" order="ASC" />
-        </c:if>
-      </th>
-      <th>
-        Model
-        <c:if test="${sortedFields.contains('model')}" >
-          <tags:sortLink field="model" order="DESC" />
-          <tags:sortLink field="model" order="ASC" />
-        </c:if>
-      </th>
-      <th>
-        Colors
-        <c:if test="${sortedFields.contains('colors')}" >
-          <tags:sortLink field="colors" order="DESC" />
-          <tags:sortLink field="colors" order="ASC" />
-        </c:if>
-      </th>
-      <th>
-        Display size
-        <c:if test="${sortedFields.contains('displaySizeInches')}" >
-          <tags:sortLink field="displaySizeInches" order="DESC" />
-          <tags:sortLink field="displaySizeInches" order="ASC" />
-        </c:if>
-      </th>
-      <th>
-        Price
-        <c:if test="${sortedFields.contains('price')}" >
-          <tags:sortLink field="price" order="DESC" />
-          <tags:sortLink field="price" order="ASC" />
-        </c:if>
-      </th>
+
+      <c:forEach var="attribute" items="${attributes}">
+        <th>
+          ${attribute.caption}
+          <c:if test="${attribute.sorted}" >
+            <tags:sortLink field="${attribute.name}" order="DESC" />
+            <tags:sortLink field="${attribute.name}" order="ASC" />
+          </c:if>
+        </th>
+      </c:forEach>
+
       <th>Quantity</th>
       <th>Action</th>
     </tr>

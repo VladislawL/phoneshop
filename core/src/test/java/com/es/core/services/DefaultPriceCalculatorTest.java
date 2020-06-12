@@ -5,6 +5,8 @@ import com.es.core.cart.CartItem;
 import com.es.core.model.phone.Phone;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -27,6 +30,9 @@ public class DefaultPriceCalculatorTest {
 
     @InjectMocks
     private DefaultPriceCalculator priceCalculator;
+
+    @Captor
+    private ArgumentCaptor<BigDecimal> subTotalPriceArgumentCaptor;
 
     @Test
     public void shouldCalculateSubTotalPrice() {
@@ -45,9 +51,11 @@ public class DefaultPriceCalculatorTest {
         when(phoneService.getPhoneById(phoneId1)).thenReturn(phone1);
         when(phoneService.getPhoneById(phoneId2)).thenReturn(phone2);
 
-        BigDecimal subTotalPrice = priceCalculator.calculateSubtotalPrice(cart);
+        priceCalculator.calculateSubtotalPrice(cart);
 
-        assertThat(subTotalPrice).isEqualTo(BigDecimal.valueOf(3));
+        verify(cart).setSubTotalPrice(subTotalPriceArgumentCaptor.capture());
+
+        assertThat(subTotalPriceArgumentCaptor.getValue()).isEqualTo(BigDecimal.valueOf(3));
     }
 
     private Phone createTestPhone(Long id, BigDecimal price) {

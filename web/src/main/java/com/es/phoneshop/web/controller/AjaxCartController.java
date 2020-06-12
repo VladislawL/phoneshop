@@ -17,29 +17,32 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.validation.Valid;
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 @RequestMapping(value = "/ajaxCart")
 public class AjaxCartController {
+
     @Resource
     private CartService cartService;
-
-    @Autowired
-    private MiniCart miniCart;
 
     @Autowired
     private PriceFormatter priceFormatter;
 
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
-    public MiniCart addPhone(@RequestBody @Valid CartItem cartItem, Errors errors) {
+    public Map<String, Object> addPhone(@RequestBody @Valid CartItem cartItem, Errors errors) {
         if (!errors.hasErrors()) {
             cartService.addPhone(cartItem.getPhoneId(), cartItem.getQuantity());
             Cart cart = cartService.getCart();
 
-            miniCart.setSubTotalPrice(priceFormatter.format(cart.getSubTotalPrice(), LocaleContextHolder.getLocale()));
-            miniCart.setItemsNumber(cart.getCartItems().size());
-            return new MiniCart(miniCart.getSubTotalPrice(), miniCart.getItemsNumber());
+            MiniCart miniCart = MiniCart.fromCart(cart);
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("miniCart", miniCart);
+            response.put("currency", priceFormatter.getDefaultCurrency());
+            return response;
         } else {
             throw new CartItemValidationException(errors.getAllErrors());
         }

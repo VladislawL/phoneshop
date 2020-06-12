@@ -39,6 +39,10 @@
         <constructor-arg name="dataSource" ref="dataSource" />
     </bean>
 
+    <bean id="defaultCurrency" class="java.util.Currency" factory-method="getInstance">
+        <constructor-arg type="java.lang.String" value="${currency.default}"/>
+    </bean>
+
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
     <jdbc:initialize-database enabled="${db.insertSchema}" data-source="dataSource">

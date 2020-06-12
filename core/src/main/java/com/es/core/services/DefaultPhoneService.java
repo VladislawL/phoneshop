@@ -17,7 +17,7 @@ public class DefaultPhoneService implements PhoneService {
     @Resource
     private PhoneDao phoneDao;
 
-    @Value("#{propertySource['phonesOnPage']}")
+    @Value("${phonesOnPage}")
     private int phonesOnPage;
 
     @Override

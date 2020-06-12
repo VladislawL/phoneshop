@@ -38,7 +38,7 @@ public class HttpSessionCartService implements CartService {
         } else {
             addNewCartItem(phoneId, quantity);
         }
-        cart.setSubTotalPrice(priceCalculatorService.calculateSubtotalPrice(cart));
+        priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
     @Override
@@ -51,7 +51,7 @@ public class HttpSessionCartService implements CartService {
                 addNewCartItem(phoneId, items.get(phoneId));
             }
         }
-        cart.setSubTotalPrice(priceCalculatorService.calculateSubtotalPrice(cart));
+        priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
     private void updateExistingCartItem(CartItem oldCartItem, Long quantity) {
@@ -72,7 +72,7 @@ public class HttpSessionCartService implements CartService {
     @Override
     public void remove(Long phoneId) {
         cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
-        cart.setSubTotalPrice(priceCalculatorService.calculateSubtotalPrice(cart));
+        priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
     private void checkQuantity(long phoneId, long quantity) {

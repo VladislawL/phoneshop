@@ -4,23 +4,31 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Component
 @Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class MiniCart {
+public class MiniCart implements Serializable {
 
-    private String subTotalPrice;
+    private BigDecimal subTotalPrice;
     private int itemsNumber;
 
     public MiniCart() {
-        subTotalPrice = BigDecimal.ZERO.toString();
+        subTotalPrice = BigDecimal.ZERO;
         itemsNumber = 0;
     }
 
-    public MiniCart(String subTotalPrice, int itemsNumber) {
+    public MiniCart(BigDecimal subTotalPrice, int itemsNumber) {
         this.subTotalPrice = subTotalPrice;
         this.itemsNumber = itemsNumber;
+    }
+
+    public static MiniCart fromCart(Cart cart) {
+        MiniCart miniCart = new MiniCart();
+        miniCart.setSubTotalPrice(cart.getSubTotalPrice());
+        miniCart.setItemsNumber(cart.getCartItems().size());
+        return miniCart;
     }
 
     public void setItemsNumber(int n) {
@@ -31,11 +39,11 @@ public class MiniCart {
         return itemsNumber;
     }
 
-    public String getSubTotalPrice() {
+    public BigDecimal getSubTotalPrice() {
         return subTotalPrice;
     }
 
-    public void setSubTotalPrice(String subTotalPrice) {
+    public void setSubTotalPrice(BigDecimal subTotalPrice) {
         this.subTotalPrice = subTotalPrice;
     }
 }

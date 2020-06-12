@@ -2,8 +2,8 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.SortOrder;
+import com.es.core.services.AttributeService;
 import com.es.core.services.PhoneService;
-import com.es.core.services.PropertyService;
 import com.es.core.utils.PriceFormatter;
 import com.es.phoneshop.web.pagedata.PaginationData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,10 @@ public class ProductListPageController {
     private CartService cartService;
 
     @Autowired
-    private PropertyService sortFieldPropertyService;
+    private PaginationData paginationData;
+
+    @Autowired
+    private AttributeService attributeService;
 
     @Autowired
     private PriceFormatter priceFormatter;
@@ -39,15 +42,14 @@ public class ProductListPageController {
             Model model) {
         int pagesCount = phoneService.getPagesCount(query);
 
-        PaginationData paginationData = new PaginationData();
         paginationData.setCurrentPage(page);
         paginationData.setPagesCount(pagesCount);
         paginationData.setPhones(phoneService.getPhonePage(page, query, sortField, sortOrder));
 
         model.addAttribute("paginationData", paginationData);
         model.addAttribute("cart", cartService.getCart());
-        model.addAttribute("sortedFields", sortFieldPropertyService.getAllProperties());
         model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
+        model.addAttribute("attributes", attributeService.getAttributes());
 
         return "productList";
     }

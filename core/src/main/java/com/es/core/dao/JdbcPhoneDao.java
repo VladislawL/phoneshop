@@ -4,8 +4,8 @@ import com.es.core.model.phone.Color;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.PhoneRowMapper;
 import com.es.core.model.phone.SortOrder;
-import com.es.core.services.PropertyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,14 +23,18 @@ import java.util.Optional;
 
 @Component
 public class JdbcPhoneDao implements PhoneDao {
+
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
     @Autowired
     private PhoneRowMapper phoneRowMapper;
 
-    @Autowired
-    private PropertyService sortFieldPropertyService;
+    @Value("#{'${fields.sorted}'.split(',')}")
+    private List<String> sortFields;
+
+    @Value("${fields.sorted.default}")
+    private String defaultSortField;
 
     private static final String INSERT_PHONE_QUERY = "insert into phones (id, brand, model, price, displaySizeInches, weightGr, " +
             "lengthMm, widthMm, heightMm, announced, deviceType, os, displayResolution, pixelDensity, displayTechnology, " +
@@ -93,9 +97,13 @@ public class JdbcPhoneDao implements PhoneDao {
             sortOrder = SortOrder.DESC;
         }
 
+        if (!sortFields.contains(sortField)) {
+            sortField = defaultSortField;
+        }
+
         return namedParameterJdbcTemplate.query("select * from phones join stocks on id = phoneId where ("
                 + getBrandAndModelLikeSearchQueryCondition(wordsParameter.size()) + ") and stock > 0 and price > 0 order by "
-                + sortFieldPropertyService.getProperty(sortField) + " " + sortOrder.name() + " offset :offset limit :limit", parameters, phoneRowMapper);
+                + sortField + " " + sortOrder.name() + " offset :offset limit :limit", parameters, phoneRowMapper);
     }
 
     public int countPhonesWhereBrandAndModelLikeSearchQuery(String searchQuery) {

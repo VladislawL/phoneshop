@@ -1,5 +1,6 @@
 package com.es.core.utils;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -9,7 +10,9 @@ import java.util.Locale;
 
 @Service
 public class PriceFormatter {
-    private static final Currency DEFAULT_CURRENCY = Currency.getInstance("USD");
+
+    @Autowired
+    private Currency defaultCurrency;
 
     public String format(BigDecimal price, Locale locale, Currency currency) {
         NumberFormat formatter = NumberFormat.getCurrencyInstance(locale);
@@ -18,10 +21,10 @@ public class PriceFormatter {
     }
 
     public String format(BigDecimal price, Locale locale) {
-        return format(price, locale, DEFAULT_CURRENCY);
+        return format(price, locale, defaultCurrency);
     }
 
     public Currency getDefaultCurrency() {
-        return DEFAULT_CURRENCY;
+        return defaultCurrency;
     }
 }

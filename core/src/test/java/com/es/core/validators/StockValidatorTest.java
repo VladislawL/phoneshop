@@ -10,7 +10,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:context/applicationContext-core.xml", "classpath:context/coreApplicationContext-test.xml"})
+@ContextConfiguration(locations = {"classpath:context/applicationContext-core.xml"})
 public class StockValidatorTest {
 
     @Autowired

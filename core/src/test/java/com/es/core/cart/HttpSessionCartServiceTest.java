@@ -43,9 +43,6 @@ public class HttpSessionCartServiceTest {
     @Spy
     private List<CartItem> cartItems;
 
-    @Captor
-    private ArgumentCaptor<BigDecimal> subTotalPriceCaptor;
-
     @InjectMocks
     private HttpSessionCartService httpSessionCartService;
 
@@ -65,12 +62,10 @@ public class HttpSessionCartServiceTest {
         long quantity = 1L;
 
         when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
-        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(2));
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
-        verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
-        assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(2);
+        verify(priceCalculatorService).calculateSubtotalPrice(cart);
         assertThat(cartItems).asList()
                 .hasSize(2)
                 .contains(new CartItem(phoneId, quantity));
@@ -105,12 +100,10 @@ public class HttpSessionCartServiceTest {
         long quantity = 3L;
 
         when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
-        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(3));
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
-        verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
-        assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(3);
+        verify(priceCalculatorService).calculateSubtotalPrice(cart);
         assertThat(cartItems).asList()
                 .hasSize(1)
                 .contains(new CartItem(phoneId, quantity));
@@ -124,12 +117,10 @@ public class HttpSessionCartServiceTest {
         cartItem.put(phoneId, quantity);
 
         when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
-        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(3));
 
         httpSessionCartService.updatePhone(cartItem);
 
-        verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
-        assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(3);
+        verify(priceCalculatorService).calculateSubtotalPrice(cart);
         assertThat(cartItems).asList()
                 .hasSize(1)
                 .contains(new CartItem(phoneId, quantity));
@@ -143,12 +134,10 @@ public class HttpSessionCartServiceTest {
         cartItem.put(phoneId, quantity);
 
         when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(true);
-        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(2));
 
         httpSessionCartService.updatePhone(cartItem);
 
-        verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
-        assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(2);
+        verify(priceCalculatorService).calculateSubtotalPrice(cart);
         assertThat(cartItems).asList()
                 .hasSize(2)
                 .contains(new CartItem(phoneId, quantity));
@@ -158,12 +147,9 @@ public class HttpSessionCartServiceTest {
     public void shouldRemovePhone() {
         long phoneId = 1L;
 
-        when(priceCalculatorService.calculateSubtotalPrice(cart)).thenReturn(BigDecimal.valueOf(0));
-
         httpSessionCartService.remove(phoneId);
 
-        verify(cart).setSubTotalPrice(subTotalPriceCaptor.capture());
-        assertThat(subTotalPriceCaptor.getValue().intValue()).isEqualTo(0);
+        verify(priceCalculatorService).calculateSubtotalPrice(cart);
         assertThat(cartItems).asList()
                 .hasSize(0);
     }

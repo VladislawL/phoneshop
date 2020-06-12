@@ -15,7 +15,7 @@ public class DefaultPriceCalculator implements PriceCalculator {
     private PhoneService phoneService;
 
     @Override
-    public BigDecimal calculateSubtotalPrice(Cart cart) {
+    public void calculateSubtotalPrice(Cart cart) {
         List<CartItem> cartItems = cart.getCartItems();
 
         BigDecimal subTotalPrice = cartItems.stream()
@@ -24,7 +24,7 @@ public class DefaultPriceCalculator implements PriceCalculator {
                 )
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
 
-        return subTotalPrice;
+        cart.setSubTotalPrice(subTotalPrice);
     }
 
 }

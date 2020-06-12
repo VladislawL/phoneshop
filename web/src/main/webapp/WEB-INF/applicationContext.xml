@@ -6,12 +6,4 @@
     <import resource="classpath:context/applicationContext-core.xml"/>
     <import resource="classpath:context/applicationContext-demoda.xml"/>
 
-    <bean id="propertySource" class="org.springframework.beans.factory.config.PropertiesFactoryBean">
-        <property name="locations">
-            <list>
-                <value>classpath:config/webApplication.properties</value>
-            </list>
-        </property>
-    </bean>
-
 </beans>

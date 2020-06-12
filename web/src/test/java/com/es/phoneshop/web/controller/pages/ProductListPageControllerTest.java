@@ -2,9 +2,13 @@ package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
+import com.es.core.model.phone.Attribute;
 import com.es.core.model.phone.Phone;
 import com.es.core.model.phone.SortOrder;
+import com.es.core.services.AttributeService;
 import com.es.core.services.PhoneService;
+import com.es.core.utils.PriceFormatter;
+import com.es.phoneshop.web.pagedata.PaginationData;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -13,15 +17,20 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Currency;
 import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.view.InternalResourceView;
@@ -36,6 +45,15 @@ public class ProductListPageControllerTest {
     @Mock
     private CartService cartService;
 
+    @Mock
+    private PaginationData paginationData;
+
+    @Mock
+    private AttributeService attributeService;
+
+    @Mock
+    private PriceFormatter priceFormatter;
+
     @InjectMocks
     private ProductListPageController controller;
 
@@ -46,13 +64,21 @@ public class ProductListPageControllerTest {
         String query = "test";
         String sortField = "price";
         SortOrder sortOrder = SortOrder.DESC;
+        Currency currency = Currency.getInstance("USD");
         Cart cart = new Cart();
 
         List<Phone> expectedPhoneList = createPhoneList(10);
+        List<Attribute> attributes = new ArrayList<>();
+        attributes.add(new Attribute("attr", "attr", true));
 
+        doNothing().when(paginationData).setPagesCount(Mockito.anyInt());
+        doNothing().when(paginationData).setCurrentPage(Mockito.anyInt());
+        doNothing().when(paginationData).setPhones(Mockito.any());
+        when(priceFormatter.getDefaultCurrency()).thenReturn(currency);
         when(phoneService.getPagesCount(Mockito.anyString())).thenReturn(pagesCount);
         when(phoneService.getPhonePage(Mockito.eq(currentPage), Mockito.eq(query), Mockito.eq(sortField), Mockito.eq(sortOrder))).thenReturn(expectedPhoneList);
         when(cartService.getCart()).thenReturn(cart);
+        when(attributeService.getAttributes()).thenReturn(attributes);
 
         MockMvc mockMvc = standaloneSetup(controller)
                 .setSingleView(new InternalResourceView("/WEB-INF/pages/productList.jsp"))
@@ -64,10 +90,10 @@ public class ProductListPageControllerTest {
                 .param("sortOrder", sortOrder.name())
                 .param("page", Integer.toString(currentPage)))
                 .andExpect(view().name("productList"))
-                .andExpect(model().attributeExists("phones"))
-                .andExpect(model().attribute("phones", expectedPhoneList))
-                .andExpect(model().attribute("pagesCount", equalTo(pagesCount)))
-                .andExpect(model().attribute("currentPage", equalTo(currentPage)))
+                .andExpect(model().attributeExists("paginationData"))
+                .andExpect(model().attribute("paginationData", equalTo(paginationData)))
+                .andExpect(model().attribute("currencySymbol", equalTo(currency)))
+                .andExpect(model().attribute("attributes", equalTo(attributes)))
                 .andExpect(model().attribute("cart", equalTo(cart)));
     }
 
