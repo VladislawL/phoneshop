@@ -1,0 +1,32 @@
+.navbar {
+    padding: 0 0 0 5px;
+}
+
+.search-form {
+    margin: 10px 0;
+    position: relative;
+}
+
+.search-icon {
+    color: #121212;
+    position: absolute;
+    left: .5rem;
+    top: .4rem;
+}
+
+.search-box {
+    padding: 5px 30px;
+}
+
+.mini-cart {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 5px;
+    background-color: rgb(0, 0, 0, 0.05);
+    color: #111;
+}
+
+.error {
+    color: red;
+}
