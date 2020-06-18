@@ -7,6 +7,7 @@ import com.es.core.model.phone.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
@@ -26,6 +27,9 @@ public class JdbcPhoneDao implements PhoneDao {
 
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private PhoneRowMapper phoneRowMapper;
@@ -69,6 +73,10 @@ public class JdbcPhoneDao implements PhoneDao {
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    public List<Phone> getPhones(List<Long> keys) {
+        return jdbcTemplate.query("select * from phones where phones.id in (" + getIdWildcards(keys.size()) + ")", keys.toArray(), phoneRowMapper);
     }
 
     public void save(final Phone phone) {
@@ -136,6 +144,20 @@ public class JdbcPhoneDao implements PhoneDao {
         phone.setId(id);
 
         setPhoneColors(phone);
+    }
+
+    private String getIdWildcards(int n) {
+        StringBuilder result = new StringBuilder();
+
+        if (n > 0) {
+            result.append("?");
+        }
+
+        for (int i = 0; i < n - 1; i++) {
+            result.append(",?");
+        }
+
+        return new String(result);
     }
 
     private String getBrandAndModelLikeSearchQueryCondition(int wordsNumber) {

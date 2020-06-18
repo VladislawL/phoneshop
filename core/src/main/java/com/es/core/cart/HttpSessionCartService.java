@@ -1,5 +1,7 @@
 package com.es.core.cart;
 
+import com.es.core.model.phone.Phone;
+import com.es.core.services.PhoneService;
 import com.es.core.services.PriceCalculator;
 import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HttpSessionCartService implements CartService {
@@ -24,6 +27,9 @@ public class HttpSessionCartService implements CartService {
 
     @Autowired
     private StockService stockService;
+
+    @Autowired
+    private PhoneService phoneService;
 
     @Override
     public Cart getCart() {
@@ -54,6 +60,15 @@ public class HttpSessionCartService implements CartService {
         priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
+    @Override
+    public List<Phone> getPhones() {
+        List<Long> ids = cart.getCartItems().stream()
+                .map(CartItem::getPhoneId)
+                .collect(Collectors.toList());
+
+        return phoneService.getPhonesById(ids);
+    }
+
     private void updateExistingCartItem(CartItem oldCartItem, Long quantity) {
         checkQuantity(oldCartItem.getPhoneId(), quantity);
 
@@ -73,6 +88,10 @@ public class HttpSessionCartService implements CartService {
     public void remove(Long phoneId) {
         cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
         priceCalculatorService.calculateSubtotalPrice(cart);
+    }
+
+    private Long getQuantity(Phone phone) {
+        return findCartItem(phone.getId()).get().getQuantity();
     }
 
     private void checkQuantity(long phoneId, long quantity) {

@@ -8,6 +8,7 @@ import java.util.Optional;
 
 public interface PhoneDao {
     Optional<Phone> get(Long key);
+    List<Phone> getPhones(List<Long> keys);
     void save(Phone phone);
     List<Phone> findAll(int offset, int limit);
     List<Phone> findOrderedPhoneListBySearchQuery(int offset, int limit, String searchQuery, String sortField, SortOrder sortOrder);

@@ -21,7 +21,7 @@
             <i class="fas fa-phone-square-alt"></i>
             <span>Phone Shop</span>
         </a>
-        <a href="#">
+        <a href="<c:url value="/cart"/>">
             <div class="mini-cart">
                 <i class="fas fa-shopping-cart"></i>
                 <span id="items-number"><c:out value="${cart.cartItems.size()}"/> items</span>
@@ -35,6 +35,10 @@
         <jsp:doBody />
 
     </main>
+
+    <script>
+        var contextPath = "${pageContext.servletContext.contextPath}";
+    </script>
 
     <script src="https://code.jquery.com/jquery-1.10.2.js" type="text/javascript"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
