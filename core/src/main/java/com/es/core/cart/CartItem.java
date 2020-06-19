@@ -7,11 +7,11 @@ import java.util.Objects;
 
 public class CartItem implements Serializable {
 
-    @NotNull
+    @NotNull(message = "{field.required}")
     private long phoneId;
 
     @NotNull
-    @Positive(message = "must be a positive number")
+    @Positive(message = "{negative.quantity}")
     private long quantity;
 
     public CartItem() {

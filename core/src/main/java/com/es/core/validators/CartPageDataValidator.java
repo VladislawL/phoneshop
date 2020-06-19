@@ -13,7 +13,14 @@ import java.util.Map;
 public class CartPageDataValidator implements Validator {
 
     @Autowired
+    private QuantityValidator quantityValidator;
+
+    @Autowired
     private StockService stockService;
+
+    private static final String QUANTITY_IS_EMPTY_MESSAGE = "Must not be blank";
+    private static final String QUANTITY_IS_NEGATIVE_MESSAGE = "Must be a positive number";
+    private static final String QUANTITY_GREATER_THAN_STOCK_MESSAGE = "Not enough stock";
 
     @Override
     public boolean supports(Class<?> aClass) {
@@ -34,12 +41,12 @@ public class CartPageDataValidator implements Validator {
 
     private boolean validateQuantity(Long phoneId, Long quantity, Errors errors) {
         if (quantity == null) {
-            errors.rejectValue("cartItems[" + phoneId + "]", "", "must not be blank");
+            errors.rejectValue("cartItems[" + phoneId + "]", "field.required", QUANTITY_IS_EMPTY_MESSAGE);
             return false;
         }
 
         if (quantity < 1) {
-            errors.rejectValue("cartItems[" + phoneId + "]", "", "must be a positive number");
+            errors.rejectValue("cartItems[" + phoneId + "]", "negative.quantity", QUANTITY_IS_NEGATIVE_MESSAGE);
             return false;
         }
 
@@ -47,10 +54,9 @@ public class CartPageDataValidator implements Validator {
     }
 
     private boolean validateStock(Long phoneId, Long quantity, Errors errors) {
-        Long stock = stockService.getStock(phoneId);
-
-        if (quantity > stock) {
-            errors.rejectValue("cartItems[" + phoneId + "]", "", "Not enough stock, available " + stock);
+        if (!quantityValidator.isValid(phoneId, quantity)) {
+            Long[] args = new Long[]{stockService.getStock(phoneId)};
+            errors.rejectValue("cartItems[" + phoneId + "]", "quantity.greaterThanStock", args , QUANTITY_GREATER_THAN_STOCK_MESSAGE);
             return false;
         }
 

@@ -6,6 +6,8 @@ import com.es.core.services.PriceCalculator;
 import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,6 +16,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
+@PropertySource(value = "classpath:messages.properties")
 public class HttpSessionCartService implements CartService {
 
     @Autowired
@@ -30,6 +33,8 @@ public class HttpSessionCartService implements CartService {
 
     @Autowired
     private PhoneService phoneService;
+
+    private static final String NOT_ENOUGH_STOCK_CODE = "quantity.greaterThanStock";
 
     @Override
     public Cart getCart() {
@@ -96,8 +101,7 @@ public class HttpSessionCartService implements CartService {
 
     private void checkQuantity(long phoneId, long quantity) {
         if (!quantityValidator.isValid(phoneId, quantity)) {
-            long stock = stockService.getStock(phoneId);
-            throw new QuantityValidationException("Not enough stock, available " + stock);
+            throw new QuantityValidationException(NOT_ENOUGH_STOCK_CODE, stockService.getStock(phoneId));
         }
     }
 
