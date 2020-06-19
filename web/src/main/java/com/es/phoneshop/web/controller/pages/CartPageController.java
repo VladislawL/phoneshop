@@ -75,7 +75,7 @@ public class CartPageController {
         }
     }
 
-    @DeleteMapping
+    @RequestMapping(method = RequestMethod.DELETE)
     @ResponseBody
     public Map<String, Object> removeCartItem(@RequestBody Long phoneId) {
         cartService.remove(phoneId);

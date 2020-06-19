@@ -14,7 +14,7 @@
             <thead class="thead-light">
             <c:forEach var="attribute" items="${attributes}">
                 <th>
-                        ${attribute.caption}
+                        <c:out value="{attribute.caption}" />
                 </th>
             </c:forEach>
             <th>Quantity</th>

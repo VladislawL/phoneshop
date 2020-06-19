@@ -76,7 +76,7 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> getPhones(List<Long> keys) {
-        return jdbcTemplate.query("select * from phones where phones.id in (" + getIdWildcards(keys.size()) + ")", keys.toArray(), phoneRowMapper);
+        return jdbcTemplate.query("select * from phones " + generateInConstraint(keys.size()), keys.toArray(), phoneRowMapper);
     }
 
     public void save(final Phone phone) {
@@ -146,17 +146,16 @@ public class JdbcPhoneDao implements PhoneDao {
         setPhoneColors(phone);
     }
 
-    private String getIdWildcards(int n) {
+    private String generateInConstraint(int n) {
         StringBuilder result = new StringBuilder();
-
         if (n > 0) {
-            result.append("?");
-        }
+            result.append("where phones.id in (?");
 
-        for (int i = 0; i < n - 1; i++) {
-            result.append(",?");
+            for (int i = 0; i < n - 1; i++) {
+                result.append(",?");
+            }
+            result.append(")");
         }
-
         return new String(result);
     }
 

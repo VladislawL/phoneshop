@@ -6,7 +6,6 @@ import com.es.core.services.PriceCalculator;
 import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-@PropertySource(value = "classpath:messages.properties")
 public class HttpSessionCartService implements CartService {
 
     @Autowired
