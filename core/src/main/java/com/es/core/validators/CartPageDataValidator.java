@@ -63,4 +63,11 @@ public class CartPageDataValidator implements Validator {
         return true;
     }
 
+    public void setStockService(StockService stockService) {
+        this.stockService = stockService;
+    }
+
+    public void setQuantityValidator(QuantityValidator quantityValidator) {
+        this.quantityValidator = quantityValidator;
+    }
 }

@@ -6,7 +6,6 @@ import com.es.core.services.PriceCalculator;
 import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
@@ -93,10 +92,6 @@ public class HttpSessionCartService implements CartService {
     public void remove(Long phoneId) {
         cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
         priceCalculatorService.calculateSubtotalPrice(cart);
-    }
-
-    private Long getQuantity(Phone phone) {
-        return findCartItem(phone.getId()).get().getQuantity();
     }
 
     private void checkQuantity(long phoneId, long quantity) {

@@ -1,7 +1,6 @@
 package com.es.phoneshop.web.controller.pages;
 
 import com.es.core.cart.Cart;
-import com.es.core.cart.CartItem;
 import com.es.core.cart.CartService;
 import com.es.core.cart.MiniCart;
 import com.es.core.services.AttributeService;
@@ -23,7 +22,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Controller
@@ -57,10 +55,7 @@ public class CartPageController {
         CartPageData cartPageData = new CartPageData();
         cartPageDataService.fillCartPageData(cartPageData);
 
-        model.addAttribute("cart", cart);
-        model.addAttribute("attributes", attributeService.getAttributes());
-        model.addAttribute("phones", cartService.getPhones());
-        model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
+        fillModel(model);
         model.addAttribute("cartPageData", cartPageData);
 
         return "cartPage";
@@ -74,10 +69,7 @@ public class CartPageController {
 
             return "redirect:cart";
         } else {
-            model.addAttribute("cart", cart);
-            model.addAttribute("attributes", attributeService.getAttributes());
-            model.addAttribute("phones", cartService.getPhones());
-            model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
+            fillModel(model);
             model.addAttribute("cartPageData", cartPageData);
             return "cartPage";
         }
@@ -94,6 +86,13 @@ public class CartPageController {
         response.put("currency", priceFormatter.getDefaultCurrency());
 
         return response;
+    }
+
+    private void fillModel(Model model) {
+        model.addAttribute("cart", cart);
+        model.addAttribute("attributes", attributeService.getAttributes());
+        model.addAttribute("phones", cartService.getPhones());
+        model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
     }
 
 }
