@@ -12,14 +12,7 @@ public class CartItemValidationException extends RuntimeException {
         this.validationErrors = validationErrors;
     }
 
-    @Override
-    public String getMessage() {
-        StringBuilder message = new StringBuilder(validationErrors.get(0).getDefaultMessage());
-
-        for (int i = 1; i < validationErrors.size(); i++) {
-            message.append(", ").append(validationErrors.get(i).getDefaultMessage());
-        }
-
-        return new String(message);
+    public List<ObjectError> getValidationErrors() {
+        return validationErrors;
     }
 }

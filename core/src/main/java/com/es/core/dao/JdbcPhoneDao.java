@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class JdbcPhoneDao implements PhoneDao {
@@ -66,6 +67,8 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private static final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
 
+    private static final String ID_IN_CONSTRAINT = "where id in (%s)";
+
     public Optional<Phone> get(final Long key) {
         try {
             Map<String, Object> idParameter = Collections.singletonMap("id", key);
@@ -76,7 +79,11 @@ public class JdbcPhoneDao implements PhoneDao {
     }
 
     public List<Phone> getPhones(List<Long> keys) {
-        return jdbcTemplate.query("select * from phones " + generateInConstraint(keys.size()), keys.toArray(), phoneRowMapper);
+        if (keys.size() > 0) {
+            return jdbcTemplate.query("select * from phones " + generateInConstraint(keys), keys.toArray(), phoneRowMapper);
+        } else {
+            return Collections.emptyList();
+        }
     }
 
     public void save(final Phone phone) {
@@ -146,17 +153,10 @@ public class JdbcPhoneDao implements PhoneDao {
         setPhoneColors(phone);
     }
 
-    private String generateInConstraint(int n) {
-        StringBuilder result = new StringBuilder();
-        if (n > 0) {
-            result.append("where phones.id in (?");
-
-            for (int i = 0; i < n - 1; i++) {
-                result.append(",?");
-            }
-            result.append(")");
-        }
-        return new String(result);
+    private String generateInConstraint(List<Long> keys) {
+        return String.format(ID_IN_CONSTRAINT, keys.stream()
+                .map(key -> "?")
+                .collect(Collectors.joining(",")));
     }
 
     private String getBrandAndModelLikeSearchQueryCondition(int wordsNumber) {

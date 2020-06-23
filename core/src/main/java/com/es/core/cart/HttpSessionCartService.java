@@ -44,7 +44,9 @@ public class HttpSessionCartService implements CartService {
         if (cartItem.isPresent()) {
             updateExistingCartItem(cartItem.get(), quantity);
         } else {
-            addNewCartItem(phoneId, quantity);
+            if (quantity > 0) {
+                addNewCartItem(phoneId, quantity);
+            }
         }
         priceCalculatorService.calculateSubtotalPrice(cart);
     }
@@ -53,10 +55,16 @@ public class HttpSessionCartService implements CartService {
     public void updatePhone(Map<Long, Long> items) throws QuantityValidationException {
         for (Long phoneId : items.keySet()) {
             Optional<CartItem> cartItem = findCartItem(phoneId);
-            if (cartItem.isPresent()) {
-                updateExistingCartItem(cartItem.get(), items.get(phoneId));
+            if (items.get(phoneId) > 0) {
+                if (cartItem.isPresent()) {
+                    updateExistingCartItem(cartItem.get(), items.get(phoneId));
+                } else {
+                    addNewCartItem(phoneId, items.get(phoneId));
+                }
             } else {
-                addNewCartItem(phoneId, items.get(phoneId));
+                if (cartItem.isPresent()) {
+                    removeCartItem(phoneId);
+                }
             }
         }
         priceCalculatorService.calculateSubtotalPrice(cart);
@@ -88,8 +96,12 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
+        removeCartItem(phoneId);
         priceCalculatorService.calculateSubtotalPrice(cart);
+    }
+
+    private void removeCartItem(Long phoneId) {
+        cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
     }
 
     private void checkQuantity(long phoneId, long quantity) {

@@ -45,7 +45,7 @@ public class CartPageDataValidator implements Validator {
             return false;
         }
 
-        if (quantity < 1) {
+        if (quantity < 0) {
             errors.rejectValue("cartItems[" + phoneId + "]", "negative.quantity", QUANTITY_IS_NEGATIVE_MESSAGE);
             return false;
         }

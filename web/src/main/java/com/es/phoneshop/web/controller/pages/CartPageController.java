@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -61,7 +60,7 @@ public class CartPageController {
         return "cartPage";
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
+    @RequestMapping(method = RequestMethod.POST)
     public String updateCart(@ModelAttribute CartPageData cartPageData, Errors errors, Model model) {
         cartPageDataValidator.validate(cartPageData, errors);
         if (!errors.hasErrors()) {
@@ -92,7 +91,6 @@ public class CartPageController {
         model.addAttribute("cart", cart);
         model.addAttribute("attributes", attributeService.getAttributes());
         model.addAttribute("phones", cartService.getPhones());
-        model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
     }
 
 }

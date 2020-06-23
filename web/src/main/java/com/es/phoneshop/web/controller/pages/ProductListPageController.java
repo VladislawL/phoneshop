@@ -48,7 +48,6 @@ public class ProductListPageController {
 
         model.addAttribute("paginationData", paginationData);
         model.addAttribute("cart", cartService.getCart());
-        model.addAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
         model.addAttribute("attributes", attributeService.getAttributes());
 
         return "productList";

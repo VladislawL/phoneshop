@@ -9,25 +9,6 @@
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
 
-  <filter>
-    <filter-name>hiddenHttpMethodFilter</filter-name>
-    <filter-class>org.springframework.web.filter.HiddenHttpMethodFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>hiddenHttpMethodFilter</filter-name>
-    <servlet-name>dispatcher</servlet-name>
-  </filter-mapping>
-
-  <filter>
-    <filter-name>getMethodConvertingFilter</filter-name>
-    <filter-class>com.es.phoneshop.web.filter.GetMethodConvertingFilter</filter-class>
-  </filter>
-  <filter-mapping>
-    <filter-name>getMethodConvertingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
-    <dispatcher>FORWARD</dispatcher>
-  </filter-mapping>
-
   <servlet>
     <servlet-name>dispatcher</servlet-name>
     <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>

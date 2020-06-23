@@ -8,6 +8,16 @@
 
     <mvc:annotation-driven conversion-service="conversionService" validator="validator" />
     <mvc:resources mapping="/resources/**" location="/resources/" />
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/*" />
+            <bean class="com.es.phoneshop.web.interceptor.MiniCartInterceptor" />
+        </mvc:interceptor>
+        <mvc:interceptor>
+            <mvc:mapping path="/*" />
+            <bean class="com.es.phoneshop.web.interceptor.CurrencyInterceptor" />
+        </mvc:interceptor>
+    </mvc:interceptors>
 
     <context:property-placeholder location="classpath:config/webApplication.properties" />
     <context:component-scan base-package="com.es.phoneshop.web" />

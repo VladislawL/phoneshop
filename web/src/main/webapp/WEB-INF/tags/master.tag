@@ -24,8 +24,8 @@
         <a href="<c:url value="/cart"/>">
             <div class="mini-cart">
                 <i class="fas fa-shopping-cart"></i>
-                <span id="items-number"><c:out value="${cart.cartItems.size()}"/> items</span>
-                <span id="subtotal-price"><fmt:formatNumber type="currency" currencySymbol="${currencySymbol}" value="${cart.subTotalPrice}"/></span>
+                <span id="items-number"><c:out value="${miniCart.itemsNumber}"/> items</span>
+                <span id="subtotal-price"><fmt:formatNumber type="currency" currencySymbol="${currencySymbol}" value="${miniCart.subTotalPrice}"/></span>
             </div>
         </a>
     </nav>

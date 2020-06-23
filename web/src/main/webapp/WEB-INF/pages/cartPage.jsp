@@ -9,12 +9,11 @@
         <input type="button" value="Back to product list">
     </a>
     <form:form method="post" modelAttribute="cartPageData">
-        <input type="hidden" name="_method" value="PUT">
         <table class="table">
             <thead class="thead-light">
             <c:forEach var="attribute" items="${attributes}">
                 <th>
-                        <c:out value="{attribute.caption}" />
+                    <c:out value="${attribute.caption}" />
                 </th>
             </c:forEach>
             <th>Quantity</th>
