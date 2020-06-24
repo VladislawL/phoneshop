@@ -62,7 +62,6 @@ public class CartPageControllerTest {
     @InjectMocks
     private CartPageController cartPageController;
 
-    private Currency currency;
     private List<Phone> phones;
     private List<Attribute> attributes;
 
@@ -72,7 +71,6 @@ public class CartPageControllerTest {
         attributes = new ArrayList<>();
         attributes.add(attribute);
         phones = createPhoneList(1);
-        currency = Currency.getInstance("USD");
 
         cartPageDataValidator.setStockService(stockService);
         cartPageDataValidator.setQuantityValidator(quantityValidator);
