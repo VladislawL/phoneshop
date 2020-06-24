@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -67,7 +68,7 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private static final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
 
-    private static final String ID_IN_CONSTRAINT = "where id in (%s)";
+    private static final String GET_PHONES_BY_IDS_QUERY = "select * from phones where id in (:keys)";
 
     public Optional<Phone> get(final Long key) {
         try {
@@ -80,7 +81,10 @@ public class JdbcPhoneDao implements PhoneDao {
 
     public List<Phone> getPhones(List<Long> keys) {
         if (keys.size() > 0) {
-            return jdbcTemplate.query("select * from phones " + generateInConstraint(keys), keys.toArray(), phoneRowMapper);
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("keys", keys);
+
+            return namedParameterJdbcTemplate.query(GET_PHONES_BY_IDS_QUERY, parameters, phoneRowMapper);
         } else {
             return Collections.emptyList();
         }
@@ -151,12 +155,6 @@ public class JdbcPhoneDao implements PhoneDao {
         phone.setId(id);
 
         setPhoneColors(phone);
-    }
-
-    private String generateInConstraint(List<Long> keys) {
-        return String.format(ID_IN_CONSTRAINT, keys.stream()
-                .map(key -> "?")
-                .collect(Collectors.joining(",")));
     }
 
     private String getBrandAndModelLikeSearchQueryCondition(int wordsNumber) {

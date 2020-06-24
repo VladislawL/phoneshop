@@ -22,16 +22,10 @@ public class ProductListPageController {
     private PhoneService phoneService;
 
     @Autowired
-    private CartService cartService;
-
-    @Autowired
     private PaginationData paginationData;
 
     @Autowired
     private AttributeService attributeService;
-
-    @Autowired
-    private PriceFormatter priceFormatter;
 
     @RequestMapping(method = RequestMethod.GET)
     public String showProductList(
@@ -47,7 +41,6 @@ public class ProductListPageController {
         paginationData.setPhones(phoneService.getPhonePage(page, query, sortField, sortOrder));
 
         model.addAttribute("paginationData", paginationData);
-        model.addAttribute("cart", cartService.getCart());
         model.addAttribute("attributes", attributeService.getAttributes());
 
         return "productList";

@@ -1,8 +1,7 @@
 package com.es.core.cart;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.io.Serializable;
 import java.util.Objects;
 
@@ -12,7 +11,7 @@ public class CartItem implements Serializable {
     private long phoneId;
 
     @NotNull
-    @PositiveOrZero(message = "{negative.quantity}")
+    @Min(value = 0, message = "{negative.quantity}")
     private long quantity;
 
     public CartItem() {

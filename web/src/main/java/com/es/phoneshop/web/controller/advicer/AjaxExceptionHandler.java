@@ -16,14 +16,14 @@ public class AjaxExceptionHandler {
 
     @ExceptionHandler(CartItemValidationException.class)
     public ResponseEntity<AjaxErrorMessage> handleCartItemValidationException(CartItemValidationException e) {
-        AjaxErrorMessage ajaxErrorMessage = new AjaxErrorMessage(exceptionFormatter.formatValidationErrors(e.getValidationErrors()));
+        AjaxErrorMessage ajaxErrorMessage = exceptionFormatter.formatValidationErrors(e.getValidationErrors());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ajaxErrorMessage);
     }
 
     @ExceptionHandler(QuantityValidationException.class)
     public ResponseEntity<AjaxErrorMessage> handleQuantityValidationException(QuantityValidationException e) {
-        String message = exceptionFormatter.formatExceptionMessageUsingCode(e.getCode(), new Long[]{e.getStock()});
-        AjaxErrorMessage ajaxErrorMessage = new AjaxErrorMessage(message);
+        AjaxErrorMessage ajaxErrorMessage = exceptionFormatter
+                .formatExceptionMessageUsingCode(e.getCode(), new Long[]{e.getStock()});
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ajaxErrorMessage);
     }
 

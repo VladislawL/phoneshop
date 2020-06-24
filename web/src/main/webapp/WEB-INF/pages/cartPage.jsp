@@ -19,7 +19,7 @@
             <th>Quantity</th>
             <th>Action</th>
             </thead>
-            <c:forEach var="phone" items="${phones}">
+            <c:forEach var="phone" items="${cartPageData.phones}">
                 <tr>
                     <td>
                         <a href="<c:url value="/productDetails/${phone.id}"/>">
@@ -49,7 +49,7 @@
         </table>
         <div class="flex-row">
             <div class="subtotal-price">
-                <span>Price: <c:out value="${cart.subTotalPrice}" /></span>
+                <span>Price: <c:out value="${cartPageData.subTotalPrice}" /></span>
             </div>
             <div class="cart-action">
                 <input name="update" type="submit" value="Update" />

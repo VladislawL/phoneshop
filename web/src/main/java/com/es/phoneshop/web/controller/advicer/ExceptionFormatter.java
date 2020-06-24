@@ -17,15 +17,15 @@ public class ExceptionFormatter {
     @Autowired
     private MessageSource messageSource;
 
-    public String formatValidationErrors(List<ObjectError> validationErrors) {
-        return validationErrors.stream()
+    public AjaxErrorMessage formatValidationErrors(List<ObjectError> validationErrors) {
+        return new AjaxErrorMessage(validationErrors.stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
-                .collect(Collectors.joining(","));
+                .collect(Collectors.joining(",")));
     }
 
-    public String formatExceptionMessageUsingCode(String code, Object[] args) {
+    public AjaxErrorMessage formatExceptionMessageUsingCode(String code, Object[] args) {
         Locale locale = LocaleContextHolder.getLocale();
-        return messageSource.getMessage(code, args, locale);
+        return new AjaxErrorMessage(messageSource.getMessage(code, args, locale));
     }
 
 }

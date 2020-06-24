@@ -1,6 +1,6 @@
 package com.es.core.validators;
 
-import com.es.core.services.CartPageData;
+import com.es.core.cart.CartPageData;
 import com.es.core.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

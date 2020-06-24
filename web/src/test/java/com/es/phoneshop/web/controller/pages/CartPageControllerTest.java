@@ -1,10 +1,11 @@
 package com.es.phoneshop.web.controller.pages;
 
+import com.es.core.cart.Cart;
 import com.es.core.cart.CartService;
 import com.es.core.model.phone.Attribute;
 import com.es.core.model.phone.Phone;
 import com.es.core.services.AttributeService;
-import com.es.core.services.CartPageData;
+import com.es.core.cart.CartPageData;
 import com.es.core.services.CartPageDataService;
 import com.es.core.services.StockService;
 import com.es.core.utils.PriceFormatter;
@@ -22,6 +23,7 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.servlet.view.InternalResourceView;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Currency;
@@ -29,8 +31,7 @@ import java.util.List;
 
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
@@ -44,9 +45,6 @@ public class CartPageControllerTest {
     private AttributeService attributeService;
 
     @Mock
-    private PriceFormatter priceFormatter;
-
-    @Mock
     private CartPageDataService cartPageDataService;
 
     @Mock
@@ -54,6 +52,9 @@ public class CartPageControllerTest {
 
     @Mock
     private QuantityValidator quantityValidator;
+
+    @Mock
+    private Cart cart;
 
     @Spy
     private CartPageDataValidator cartPageDataValidator;
@@ -78,7 +79,6 @@ public class CartPageControllerTest {
 
         when(attributeService.getAttributes()).thenReturn(attributes);
         when(cartService.getPhones()).thenReturn(phones);
-        when(priceFormatter.getDefaultCurrency()).thenReturn(currency);
     }
 
     @Test
@@ -88,6 +88,8 @@ public class CartPageControllerTest {
         CartPageData cartPageData = new CartPageData();
         cartPageData.setCartItems(Collections.singletonMap(phoneId, quantity));
 
+        when(cartPageDataService.createCartPageData()).thenReturn(cartPageData);
+
         MockMvc mockMvc = standaloneSetup(cartPageController)
                 .setSingleView(new InternalResourceView("/WEB-INF/pages/cartPage.jsp"))
                 .build();
@@ -95,8 +97,6 @@ public class CartPageControllerTest {
         mockMvc.perform(get("/cart"))
                 .andExpect(model().attributeExists("cartPageData"))
                 .andExpect(model().attribute("attributes", equalTo(attributes)))
-                .andExpect(model().attribute("currencySymbol", equalTo(currency)))
-                .andExpect(model().attribute("phones", equalTo(phones)))
                 .andExpect(view().name("cartPage"));
     }
 
@@ -106,7 +106,7 @@ public class CartPageControllerTest {
 
         MockMvc mockMvc = standaloneSetup(cartPageController).build();
 
-        mockMvc.perform(put("/cart"))
+        mockMvc.perform(post("/cart"))
                 .andExpect(redirectedUrl("cart"));
     }
 
@@ -117,9 +117,11 @@ public class CartPageControllerTest {
         CartPageData cartPageData = new CartPageData();
         cartPageData.setCartItems(Collections.singletonMap(phoneId, quantity));
 
+        when(cart.getSubTotalPrice()).thenReturn(BigDecimal.ZERO);
+
         MockMvc mockMvc = standaloneSetup(cartPageController).build();
 
-        mockMvc.perform(put("/cart")
+        mockMvc.perform(post("/cart")
                 .param("cartItems["+ phoneId + "]", Long.toString(quantity)))
                 .andExpect(model().attributeHasFieldErrorCode("cartPageData", "cartItems[1]", "negative.quantity"))
                 .andExpect(view().name("cartPage"));
@@ -134,10 +136,11 @@ public class CartPageControllerTest {
 
         when(stockService.getStock(Mockito.eq(phoneId))).thenReturn(0L);
         when(quantityValidator.isValid(Mockito.eq(phoneId), Mockito.eq(quantity))).thenReturn(false);
+        when(cart.getSubTotalPrice()).thenReturn(BigDecimal.ZERO);
 
         MockMvc mockMvc = standaloneSetup(cartPageController).build();
 
-        mockMvc.perform(put("/cart")
+        mockMvc.perform(post("/cart")
                 .param("cartItems["+ phoneId + "]", Long.toString(quantity)))
                 .andExpect(model().attributeHasFieldErrorCode("cartPageData", "cartItems[1]", "quantity.greaterThanStock"))
                 .andExpect(view().name("cartPage"));

@@ -41,13 +41,9 @@ public class HttpSessionCartService implements CartService {
     @Override
     public void addPhone(Long phoneId, Long quantity) throws QuantityValidationException {
         Optional<CartItem> cartItem = findCartItem(phoneId);
-        if (cartItem.isPresent()) {
-            updateExistingCartItem(cartItem.get(), quantity);
-        } else {
-            if (quantity > 0) {
-                addNewCartItem(phoneId, quantity);
-            }
-        }
+
+        addOrUpdateCartItem(cartItem, phoneId, quantity);
+
         priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
@@ -56,11 +52,7 @@ public class HttpSessionCartService implements CartService {
         for (Long phoneId : items.keySet()) {
             Optional<CartItem> cartItem = findCartItem(phoneId);
             if (items.get(phoneId) > 0) {
-                if (cartItem.isPresent()) {
-                    updateExistingCartItem(cartItem.get(), items.get(phoneId));
-                } else {
-                    addNewCartItem(phoneId, items.get(phoneId));
-                }
+                addOrUpdateCartItem(cartItem, phoneId, items.get(phoneId));
             } else {
                 if (cartItem.isPresent()) {
                     removeCartItem(phoneId);
@@ -68,6 +60,14 @@ public class HttpSessionCartService implements CartService {
             }
         }
         priceCalculatorService.calculateSubtotalPrice(cart);
+    }
+
+    private void addOrUpdateCartItem(Optional<CartItem> cartItem, Long newId, Long quantity) {
+        if (cartItem.isPresent()) {
+            updateExistingCartItem(cartItem.get(), quantity);
+        } else {
+            addNewCartItem(newId, quantity);
+        }
     }
 
     @Override

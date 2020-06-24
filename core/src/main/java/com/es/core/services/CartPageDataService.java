@@ -1,5 +1,9 @@
 package com.es.core.services;
 
+import com.es.core.cart.CartPageData;
+
+import java.util.Map;
+
 public interface CartPageDataService {
-    void fillCartPageData(CartPageData cartPageData);
+    CartPageData createCartPageData();
 }

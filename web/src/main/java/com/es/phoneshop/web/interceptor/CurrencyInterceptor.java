@@ -15,6 +15,8 @@ public class CurrencyInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        request.setAttribute("currencySymbol", priceFormatter.getDefaultCurrency());
+        if (modelAndView != null) {
+            modelAndView.addObject("currencySymbol", priceFormatter.getDefaultCurrency());
+        }
     }
 }

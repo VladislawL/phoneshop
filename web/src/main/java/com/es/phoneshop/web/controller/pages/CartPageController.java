@@ -6,7 +6,7 @@ import com.es.core.cart.MiniCart;
 import com.es.core.services.AttributeService;
 import com.es.core.services.CartPageDataService;
 import com.es.core.utils.PriceFormatter;
-import com.es.core.services.CartPageData;
+import com.es.core.cart.CartPageData;
 import com.es.core.validators.CartPageDataValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -51,11 +51,10 @@ public class CartPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getCart(Model model) {
-        CartPageData cartPageData = new CartPageData();
-        cartPageDataService.fillCartPageData(cartPageData);
+        CartPageData cartPageData = cartPageDataService.createCartPageData();
 
-        fillModel(model);
         model.addAttribute("cartPageData", cartPageData);
+        model.addAttribute("attributes", attributeService.getAttributes());
 
         return "cartPage";
     }
@@ -68,8 +67,11 @@ public class CartPageController {
 
             return "redirect:cart";
         } else {
-            fillModel(model);
+            cartPageData.setPhones(cartService.getPhones());
+            cartPageData.setSubTotalPrice(cart.getSubTotalPrice());
             model.addAttribute("cartPageData", cartPageData);
+            model.addAttribute("attributes", attributeService.getAttributes());
+
             return "cartPage";
         }
     }
@@ -85,12 +87,6 @@ public class CartPageController {
         response.put("currency", priceFormatter.getDefaultCurrency());
 
         return response;
-    }
-
-    private void fillModel(Model model) {
-        model.addAttribute("cart", cart);
-        model.addAttribute("attributes", attributeService.getAttributes());
-        model.addAttribute("phones", cartService.getPhones());
     }
 
 }

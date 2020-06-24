@@ -17,8 +17,10 @@ public class MiniCartInterceptor extends HandlerInterceptorAdapter {
 
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-        Cart cart = cartService.getCart();
-        MiniCart miniCart = MiniCart.fromCart(cart);
-        request.setAttribute("miniCart", miniCart);
+        if (modelAndView != null) {
+            Cart cart = cartService.getCart();
+            MiniCart miniCart = MiniCart.fromCart(cart);
+            modelAndView.addObject("miniCart", miniCart);
+        }
     }
 }
