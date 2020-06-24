@@ -49,7 +49,7 @@
         </table>
         <div class="flex-row">
             <div class="subtotal-price">
-                <span>Price: <c:out value="${cartPageData.subTotalPrice}" /></span>
+                <span>Price: <fmt:formatNumber value="${cartPageData.subTotalPrice}" type="currency" currencySymbol="${currencySymbol}" /></span>
             </div>
             <div class="cart-action">
                 <input name="update" type="submit" value="Update" />
