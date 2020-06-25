@@ -31,6 +31,7 @@
         <property name="converters">
             <list>
                 <bean class="com.es.phoneshop.web.controller.converter.StringToSortOrder"/>
+                <bean class="com.es.phoneshop.web.controller.converter.StringIdToPhone" />
             </list>
         </property>
     </bean>

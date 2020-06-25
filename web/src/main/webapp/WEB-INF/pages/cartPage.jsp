@@ -19,30 +19,30 @@
             <th>Quantity</th>
             <th>Action</th>
             </thead>
-            <c:forEach var="phone" items="${cartPageData.phones}">
+            <c:forEach var="cartItem" items="${cartPageData.cartItems}">
                 <tr>
                     <td>
-                        <a href="<c:url value="/productDetails/${phone.id}"/>">
-                            <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
+                        <a href="<c:url value="/productDetails/${cartItem.key.id}"/>">
+                            <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${cartItem.key.imageUrl}">
                         </a>
                     </td>
-                    <td><c:out value="${phone.brand}" /></td>
-                    <td><c:out value="${phone.model}" /></td>
+                    <td><c:out value="${cartItem.key.brand}" /></td>
+                    <td><c:out value="${cartItem.key.model}" /></td>
                     <td>
-                        <c:forEach var="color" items="${phone.colors}">
+                        <c:forEach var="color" items="${cartItem.key.colors}">
                             <c:out value="${color.code}" />
                         </c:forEach>
                     </td>
-                    <td><c:out value="${phone.displaySizeInches}" />"</td>
-                    <td><fmt:formatNumber value="${phone.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
+                    <td><c:out value="${cartItem.key.displaySizeInches}" />"</td>
+                    <td><fmt:formatNumber value="${cartItem.key.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
                     <td>
-                        <form:input path="cartItems[${phone.id}]" value="${cartPageData.cartItems.get(phone.id)}" />
+                        <form:input path="cartItems[${cartItem.key.id}]" value="${cartPageData.cartItems.get(cartItem.key.id)}" />
                         <div class="error">
-                            <form:errors path="cartItems[${phone.id}]" cssClass="error" />
+                            <form:errors path="cartItems[${cartItem.key.id}]" cssClass="error" />
                         </div>
                     </td>
                     <td>
-                        <input name="delete-cart-item" type="submit" data-phone-id="<c:out value="${phone.id}" />" value="Delete" />
+                        <input name="delete-cart-item" type="submit" data-phone-id="<c:out value="${cartItem.key.id}" />" value="Delete" />
                     </td>
                 </tr>
             </c:forEach>

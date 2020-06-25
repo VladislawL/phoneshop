@@ -11,6 +11,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.math.BigDecimal;
@@ -20,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -30,6 +30,9 @@ public class DefaultCartPageDataServiceTest {
     private CartService cartService;
 
     @Mock
+    private PhoneService phoneService;
+
+    @Mock
     private Cart cart;
 
     @InjectMocks
@@ -37,40 +40,28 @@ public class DefaultCartPageDataServiceTest {
 
     @Test
     public void shouldCreateCartPageData() {
-        CartItem cartItem1 = new CartItem(1L, 1L);
-        CartItem cartItem2 = new CartItem(2L, 2L);
+        long phoneId = 1L;
+        CartItem cartItem = new CartItem(phoneId, 1L);
+        Phone phone = new Phone();
+        phone.setId(phoneId);
         List<CartItem> cartItems = new ArrayList<>();
-        cartItems.add(cartItem1);
-        cartItems.add(cartItem2);
+        cartItems.add(cartItem);
         BigDecimal subTotalPrice = BigDecimal.ZERO;
-        List<Phone> phones = createPhoneList(2);
+        List<Phone> phones = new ArrayList<>();
+        phones.add(phone);
 
-        Map<Long, Long> expectedMap = new HashMap<>();
-        expectedMap.put(cartItem1.getPhoneId(), cartItem1.getQuantity());
-        expectedMap.put(cartItem2.getPhoneId(), cartItem2.getQuantity());
+        Map<Phone, Long> expectedMap = new HashMap<>();
+        expectedMap.put(phone, cartItem.getQuantity());
 
         when(cartService.getCart()).thenReturn(cart);
-        when(cartService.getPhones()).thenReturn(phones);
+        when(phoneService.getPhonesById(Mockito.any())).thenReturn(phones);
         when(cart.getCartItems()).thenReturn(cartItems);
         when(cart.getSubTotalPrice()).thenReturn(subTotalPrice);
 
         CartPageData cartPageData = cartPageDataService.createCartPageData();
 
         assertThat(expectedMap).isEqualTo(cartPageData.getCartItems());
-        assertThat(phones).isEqualTo(cartPageData.getPhones());
         assertThat(subTotalPrice).isEqualTo(cartPageData.getSubTotalPrice());
-    }
-
-    private List<Phone> createPhoneList(int count) {
-        List<Phone> phones = new ArrayList<>();
-
-        for (int i = 0; i < count; i++) {
-            Phone phone = new Phone();
-            phone.setId((long) i);
-            phones.add(phone);
-        }
-
-        return phones;
     }
 
 }

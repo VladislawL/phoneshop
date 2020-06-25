@@ -63,11 +63,10 @@ public class CartPageController {
     public String updateCart(@ModelAttribute CartPageData cartPageData, Errors errors, Model model) {
         cartPageDataValidator.validate(cartPageData, errors);
         if (!errors.hasErrors()) {
-            cartService.updatePhone(cartPageData.getCartItems());
+            cartService.updatePhone(cartPageDataService.convertCartItems(cartPageData));
 
             return "redirect:cart";
         } else {
-            cartPageData.setPhones(cartService.getPhones());
             cartPageData.setSubTotalPrice(cart.getSubTotalPrice());
             model.addAttribute("cartPageData", cartPageData);
             model.addAttribute("attributes", attributeService.getAttributes());

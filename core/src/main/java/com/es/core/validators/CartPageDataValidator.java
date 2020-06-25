@@ -1,6 +1,7 @@
 package com.es.core.validators;
 
 import com.es.core.cart.CartPageData;
+import com.es.core.model.phone.Phone;
 import com.es.core.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,11 +31,11 @@ public class CartPageDataValidator implements Validator {
     @Override
     public void validate(Object o, Errors errors) {
         CartPageData cartPageData = (CartPageData) o;
-        for (Map.Entry<Long, Long> pair : cartPageData.getCartItems().entrySet()) {
-            boolean quantityValidationResult = validateQuantity(pair.getKey(), pair.getValue(), errors);
+        for (Map.Entry<Phone, Long> pair : cartPageData.getCartItems().entrySet()) {
+            boolean quantityValidationResult = validateQuantity(pair.getKey().getId(), pair.getValue(), errors);
 
             if (quantityValidationResult) {
-                validateStock(pair.getKey(), pair.getValue(), errors);
+                validateStock(pair.getKey().getId(), pair.getValue(), errors);
             }
         }
     }
