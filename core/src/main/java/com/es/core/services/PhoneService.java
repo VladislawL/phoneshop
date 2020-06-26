@@ -9,4 +9,5 @@ public interface PhoneService {
     List<Phone> getPhonePage(int page, String query, String sortField, SortOrder sortOrder);
     int getPagesCount(String searchQuery);
     Phone getPhoneById(long id);
+    List<Phone> getPhonesById(List<Long> ids);
 }

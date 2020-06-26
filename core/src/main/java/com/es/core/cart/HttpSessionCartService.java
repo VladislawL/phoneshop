@@ -1,5 +1,7 @@
 package com.es.core.cart;
 
+import com.es.core.model.phone.Phone;
+import com.es.core.services.PhoneService;
 import com.es.core.services.PriceCalculator;
 import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class HttpSessionCartService implements CartService {
@@ -25,6 +28,11 @@ public class HttpSessionCartService implements CartService {
     @Autowired
     private StockService stockService;
 
+    @Autowired
+    private PhoneService phoneService;
+
+    private static final String NOT_ENOUGH_STOCK_CODE = "quantity.greaterThanStock";
+
     @Override
     public Cart getCart() {
         return cart;
@@ -33,11 +41,9 @@ public class HttpSessionCartService implements CartService {
     @Override
     public void addPhone(Long phoneId, Long quantity) throws QuantityValidationException {
         Optional<CartItem> cartItem = findCartItem(phoneId);
-        if (cartItem.isPresent()) {
-            updateExistingCartItem(cartItem.get(), quantity);
-        } else {
-            addNewCartItem(phoneId, quantity);
-        }
+
+        addOrUpdateCartItem(cartItem, phoneId, quantity);
+
         priceCalculatorService.calculateSubtotalPrice(cart);
     }
 
@@ -45,13 +51,32 @@ public class HttpSessionCartService implements CartService {
     public void updatePhone(Map<Long, Long> items) throws QuantityValidationException {
         for (Long phoneId : items.keySet()) {
             Optional<CartItem> cartItem = findCartItem(phoneId);
-            if (cartItem.isPresent()) {
-                updateExistingCartItem(cartItem.get(), items.get(phoneId));
+            if (items.get(phoneId) > 0) {
+                addOrUpdateCartItem(cartItem, phoneId, items.get(phoneId));
             } else {
-                addNewCartItem(phoneId, items.get(phoneId));
+                if (cartItem.isPresent()) {
+                    removeCartItem(phoneId);
+                }
             }
         }
         priceCalculatorService.calculateSubtotalPrice(cart);
+    }
+
+    private void addOrUpdateCartItem(Optional<CartItem> cartItem, Long newId, Long quantity) {
+        if (cartItem.isPresent()) {
+            updateExistingCartItem(cartItem.get(), quantity);
+        } else {
+            addNewCartItem(newId, quantity);
+        }
+    }
+
+    @Override
+    public List<Phone> getPhones() {
+        List<Long> ids = cart.getCartItems().stream()
+                .map(CartItem::getPhoneId)
+                .collect(Collectors.toList());
+
+        return phoneService.getPhonesById(ids);
     }
 
     private void updateExistingCartItem(CartItem oldCartItem, Long quantity) {
@@ -71,14 +96,17 @@ public class HttpSessionCartService implements CartService {
 
     @Override
     public void remove(Long phoneId) {
-        cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
+        removeCartItem(phoneId);
         priceCalculatorService.calculateSubtotalPrice(cart);
+    }
+
+    private void removeCartItem(Long phoneId) {
+        cart.getCartItems().removeIf(cartItem -> cartItem.getPhoneId().equals(phoneId));
     }
 
     private void checkQuantity(long phoneId, long quantity) {
         if (!quantityValidator.isValid(phoneId, quantity)) {
-            long stock = stockService.getStock(phoneId);
-            throw new QuantityValidationException("Not enough stock, available " + stock);
+            throw new QuantityValidationException(NOT_ENOUGH_STOCK_CODE, stockService.getStock(phoneId));
         }
     }
 

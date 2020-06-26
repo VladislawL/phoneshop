@@ -46,4 +46,9 @@ public class DefaultPhoneService implements PhoneService {
             throw new PhoneNotFoundException(id);
         }
     }
+
+    @Override
+    public List<Phone> getPhonesById(List<Long> ids) {
+        return phoneDao.getPhones(ids);
+    }
 }

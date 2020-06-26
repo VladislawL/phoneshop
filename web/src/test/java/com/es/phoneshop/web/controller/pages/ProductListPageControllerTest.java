@@ -43,16 +43,10 @@ public class ProductListPageControllerTest {
     private PhoneService phoneService;
 
     @Mock
-    private CartService cartService;
-
-    @Mock
     private PaginationData paginationData;
 
     @Mock
     private AttributeService attributeService;
-
-    @Mock
-    private PriceFormatter priceFormatter;
 
     @InjectMocks
     private ProductListPageController controller;
@@ -64,8 +58,6 @@ public class ProductListPageControllerTest {
         String query = "test";
         String sortField = "price";
         SortOrder sortOrder = SortOrder.DESC;
-        Currency currency = Currency.getInstance("USD");
-        Cart cart = new Cart();
 
         List<Phone> expectedPhoneList = createPhoneList(10);
         List<Attribute> attributes = new ArrayList<>();
@@ -74,10 +66,8 @@ public class ProductListPageControllerTest {
         doNothing().when(paginationData).setPagesCount(Mockito.anyInt());
         doNothing().when(paginationData).setCurrentPage(Mockito.anyInt());
         doNothing().when(paginationData).setPhones(Mockito.any());
-        when(priceFormatter.getDefaultCurrency()).thenReturn(currency);
         when(phoneService.getPagesCount(Mockito.anyString())).thenReturn(pagesCount);
         when(phoneService.getPhonePage(Mockito.eq(currentPage), Mockito.eq(query), Mockito.eq(sortField), Mockito.eq(sortOrder))).thenReturn(expectedPhoneList);
-        when(cartService.getCart()).thenReturn(cart);
         when(attributeService.getAttributes()).thenReturn(attributes);
 
         MockMvc mockMvc = standaloneSetup(controller)
@@ -92,9 +82,7 @@ public class ProductListPageControllerTest {
                 .andExpect(view().name("productList"))
                 .andExpect(model().attributeExists("paginationData"))
                 .andExpect(model().attribute("paginationData", equalTo(paginationData)))
-                .andExpect(model().attribute("currencySymbol", equalTo(currency)))
-                .andExpect(model().attribute("attributes", equalTo(attributes)))
-                .andExpect(model().attribute("cart", equalTo(cart)));
+                .andExpect(model().attribute("attributes", equalTo(attributes)));
     }
 
     private List<Phone> createPhoneList(int count) {

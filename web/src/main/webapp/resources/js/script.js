@@ -5,19 +5,14 @@ $('input[name="add-to-cart"]').on("click", function() {
 
     $.ajax({
         type: "POST",
-        url: "ajaxCart",
+        url: contextPath + "/ajaxCart",
         contentType: "application/json",
         data: JSON.stringify({
             phoneId: phoneId,
             quantity: $quantityField.val()
         }),
         success: function (msg) {
-            var formatter = new Intl.NumberFormat(navigator.language, {
-                style: 'currency',
-                currency: msg.currency,
-            });
-            $("#items-number").text(msg.miniCart.itemsNumber + " items");
-            $("#subtotal-price").text(formatter.format(msg.miniCart.subTotalPrice));
+            updateMiniCart(msg);
             $quantityField.siblings(".error").text("");
         },
         error: function (request, status, error) {
@@ -26,3 +21,31 @@ $('input[name="add-to-cart"]').on("click", function() {
         }
     });
 });
+
+
+$('input[name="delete-cart-item"]').on("click", function() {
+    var $this = $(this);
+    var phoneId = $this.data("phoneId");
+
+    $.ajax({
+        type: "DELETE",
+        url: contextPath + "/cart",
+        contentType: "application/json",
+        data: JSON.stringify(phoneId),
+        success: function (msg) {
+            updateMiniCart(msg);
+            $this.parents('tr').remove();
+        }
+    });
+
+    return false;
+});
+
+function updateMiniCart(msg) {
+    var formatter = new Intl.NumberFormat(navigator.language, {
+        style: 'currency',
+        currency: msg.currency
+    });
+    $("#items-number").text(msg.miniCart.itemsNumber + " items");
+    $("#subtotal-price").text(formatter.format(msg.miniCart.subTotalPrice));
+}

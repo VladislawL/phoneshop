@@ -32,26 +32,28 @@
     </thead>
     <c:forEach var="phone" items="${paginationData.phones}">
       <tr>
-        <td>
-          <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
-        </td>
-        <td><c:out value="${phone.brand}" /></td>
-        <td><c:out value="${phone.model}" /></td>
-        <td>
-          <c:forEach var="color" items="${phone.colors}">
-            <c:out value="${color.code}" />
-          </c:forEach>
-        </td>
-        <td><c:out value="${phone.displaySizeInches}" />"</td>
-        <td><fmt:formatNumber value="${phone.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
-        <td>
-          <input id="<c:out value="${phone.id}" />" type="text" />
-          <div class="error"></div>
-        </td>
-        <td>
-          <input name="add-to-cart" type="submit" data-phone-id="<c:out value="${phone.id}" />" value="Add to Cart" />
-          <input type="hidden" value="<c:out value="${phone.id}" />" />
-        </td>
+          <td>
+            <a href="<c:url value="/productDetails/${phone.id}"/>">
+              <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${phone.imageUrl}">
+            </a>
+          </td>
+          <td><c:out value="${phone.brand}" /></td>
+          <td><c:out value="${phone.model}" /></td>
+          <td>
+            <c:forEach var="color" items="${phone.colors}">
+              <c:out value="${color.code}" />
+            </c:forEach>
+          </td>
+          <td><c:out value="${phone.displaySizeInches}" />"</td>
+          <td><fmt:formatNumber value="${phone.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
+          <td>
+            <input id="<c:out value="${phone.id}" />" type="text" />
+            <div class="error"></div>
+          </td>
+          <td>
+            <input name="add-to-cart" type="submit" data-phone-id="<c:out value="${phone.id}" />" value="Add to Cart" />
+            <input type="hidden" value="<c:out value="${phone.id}" />" />
+          </td>
       </tr>
     </c:forEach>
   </table>

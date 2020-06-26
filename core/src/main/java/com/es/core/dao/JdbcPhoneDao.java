@@ -7,7 +7,9 @@ import com.es.core.model.phone.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,12 +22,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class JdbcPhoneDao implements PhoneDao {
 
     @Resource
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Resource
+    private JdbcTemplate jdbcTemplate;
 
     @Autowired
     private PhoneRowMapper phoneRowMapper;
@@ -62,12 +68,25 @@ public class JdbcPhoneDao implements PhoneDao {
 
     private static final String FIND_ALL_PHONES_WITH_OFFSET_AND_LIMIT_QUERY = "select * from phones offset :offset limit :limit";
 
+    private static final String GET_PHONES_BY_IDS_QUERY = "select * from phones where id in (:keys)";
+
     public Optional<Phone> get(final Long key) {
         try {
             Map<String, Object> idParameter = Collections.singletonMap("id", key);
             return Optional.of(namedParameterJdbcTemplate.queryForObject(GET_PHONE_QUERY, idParameter, phoneRowMapper));
         } catch (IncorrectResultSizeDataAccessException e) {
             return Optional.empty();
+        }
+    }
+
+    public List<Phone> getPhones(List<Long> keys) {
+        if (keys.size() > 0) {
+            MapSqlParameterSource parameters = new MapSqlParameterSource();
+            parameters.addValue("keys", keys);
+
+            return namedParameterJdbcTemplate.query(GET_PHONES_BY_IDS_QUERY, parameters, phoneRowMapper);
+        } else {
+            return Collections.emptyList();
         }
     }
 
