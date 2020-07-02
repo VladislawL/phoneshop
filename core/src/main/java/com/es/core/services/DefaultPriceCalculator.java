@@ -2,7 +2,9 @@ package com.es.core.services;
 
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartItem;
+import com.es.core.model.order.Order;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -13,6 +15,9 @@ public class DefaultPriceCalculator implements PriceCalculator {
 
     @Autowired
     private PhoneService phoneService;
+
+    @Value("${delivery.price}")
+    private BigDecimal deliveryPrice;
 
     @Override
     public void calculateSubtotalPrice(Cart cart) {
@@ -27,4 +32,13 @@ public class DefaultPriceCalculator implements PriceCalculator {
         cart.setSubTotalPrice(subTotalPrice);
     }
 
+    @Override
+    public void calculateTotalPrice(Order order) {
+        order.setTotalPrice(order.getSubtotal().add(order.getDeliveryPrice()));
+    }
+
+    @Override
+    public BigDecimal getDeliveryPrice() {
+        return deliveryPrice;
+    }
 }

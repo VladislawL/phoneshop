@@ -104,6 +104,12 @@
         <scope>test</scope>
       </dependency>
 
+      <dependency>
+        <groupId>com.googlecode.libphonenumber</groupId>
+        <artifactId>libphonenumber</artifactId>
+        <version>8.12.6</version>
+      </dependency>
+
     </dependencies>
   </dependencyManagement>
   <build>

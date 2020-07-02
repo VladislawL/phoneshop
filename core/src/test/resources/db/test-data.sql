@@ -12,3 +12,11 @@ insert into phone2color (phoneId, colorId) values (3, 2);
 insert into stocks (phoneId, stock, reserved) values (1, 5, 0);
 insert into stocks (phoneId, stock, reserved) values (2, 5, 0);
 insert into stocks (phoneId, stock, reserved) values (3, 5, 0);
+
+insert into orderStatus (id, status) values (0, 'new');
+insert into orderStatus (id, status) values (1, 'delivered');
+insert into orderStatus (id, status) values (2, 'rejected');
+
+insert into orders (id, uuid, status) values (1, '12345678-1234-1234-3456-000000000000', 0);
+
+insert into orderItems (orderId, phoneId, quantity) values (1, 1, 1);

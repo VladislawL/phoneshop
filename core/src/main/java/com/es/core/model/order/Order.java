@@ -2,13 +2,14 @@ package com.es.core.model.order;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
-public class Order
-{
+public class Order {
     private Long id;
+    private UUID uuid;
     private List<OrderItem> orderItems;
     /**
-     *  A sum of order item prices;
+     * A sum of order item prices;
      */
     private BigDecimal subtotal;
     private BigDecimal deliveryPrice;
@@ -30,6 +31,14 @@ public class Order
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public List<OrderItem> getOrderItems() {

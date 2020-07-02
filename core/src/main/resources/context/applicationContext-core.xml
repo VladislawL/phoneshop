@@ -21,6 +21,14 @@
         <constructor-arg name="mappedClass" value="com.es.core.model.phone.Color" />
     </bean>
 
+    <bean id="orderRowMapper" class="com.es.core.model.order.OrderRowMapper" >
+        <property name="namedParameterJdbcTemplate" ref="namedParameterJdbcTemplate" />
+    </bean>
+
+    <bean id="orderItemRowMapper" class="com.es.core.model.order.OrderItemRowMapper">
+        <property name="phoneService" ref="defaultPhoneService" />
+    </bean>
+
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
         <property name="dataSource" ref="dataSource" />
     </bean>
