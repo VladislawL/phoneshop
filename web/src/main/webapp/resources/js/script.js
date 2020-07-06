@@ -49,3 +49,15 @@ function updateMiniCart(msg) {
     $("#items-number").text(msg.miniCart.itemsNumber + " items");
     $("#subtotal-price").text(formatter.format(msg.miniCart.subTotalPrice));
 }
+
+$('input[name="order"]').on("click", function () {
+    var $form = $('form[name="cartForm"]');
+    $form.attr("action", contextPath + "/order");
+    $form.attr("method", "GET");
+});
+
+$('input[name="update"]').on("click", function () {
+    var $form = $('form[name="cartForm"]');
+    $form.attr("action", contextPath + "/cart");
+    $form.attr("method", "POST");
+});

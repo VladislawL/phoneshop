@@ -4,6 +4,8 @@ import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
+import com.es.core.order.OutOfStockException;
+import com.es.core.services.StockService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +21,13 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
     @Autowired
     private JdbcOrderDao jdbcOrderDao;
 
+    @Autowired
+    private StockService stockService;
+
     @Test
     public void shouldGetOrderByUUID() {
         UUID uuid = UUID.fromString("12345678-1234-1234-3456-000000000000");
-        Optional<Order> order = jdbcOrderDao.getOrder(uuid);
+        Optional<Order> order = jdbcOrderDao.getOrderByUUID(uuid);
 
         assertThat(order).isPresent()
                 .get()
@@ -35,13 +40,13 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
     @Test
     public void shouldReturnEmptyOptional() {
         UUID uuid = UUID.randomUUID();
-        Optional<Order> order = jdbcOrderDao.getOrder(uuid);
+        Optional<Order> order = jdbcOrderDao.getOrderByUUID(uuid);
 
         assertThat(order).isEmpty();
     }
 
     @Test
-    public void shouldSaveOrder() {
+    public void shouldSaveOrder() throws OutOfStockException {
         long quantity = 1L;
         Order expectedOrder = new Order();
         Phone phone = new Phone();
@@ -64,7 +69,7 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
 
         jdbcOrderDao.save(expectedOrder);
 
-        Optional<Order> order = jdbcOrderDao.getOrder(uuid);
+        Optional<Order> order = jdbcOrderDao.getOrderByUUID(uuid);
 
         assertThat(order).isPresent()
                 .get()
@@ -75,11 +80,13 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateOrder() {
-        long quantity = 1L;
+    public void shouldUpdateOrder() throws OutOfStockException {
+        long quantity = 5L;
+        long expectedStock = 0L;
+        long phoneId = 1L;
         Order expectedOrder = new Order();
         Phone phone = new Phone();
-        phone.setId(2L);
+        phone.setId(phoneId);
 
         OrderItem orderItem = new OrderItem();
         orderItem.setPhone(phone);
@@ -99,7 +106,8 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
 
         jdbcOrderDao.save(expectedOrder);
 
-        Optional<Order> order = jdbcOrderDao.getOrder(uuid);
+        Optional<Order> order = jdbcOrderDao.getOrderByUUID(uuid);
+        long stock = stockService.getStock(phoneId);
 
         assertThat(order).isPresent()
                 .get()
@@ -107,6 +115,7 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
         assertThat(order.get().getOrderItems()).isNotNull()
                 .asList().hasSize(1)
                 .anyMatch(o -> ((OrderItem) o).getPhone().equals(orderItem.getPhone()));
+        assertThat(stock).isEqualTo(expectedStock);
     }
 
 }

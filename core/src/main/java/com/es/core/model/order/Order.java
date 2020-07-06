@@ -1,5 +1,9 @@
 package com.es.core.model.order;
 
+import com.es.core.validators.OrderItemsConstraint;
+import com.es.core.validators.PhoneNumber;
+
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
@@ -7,6 +11,7 @@ import java.util.UUID;
 public class Order {
     private Long id;
     private UUID uuid;
+    @OrderItemsConstraint(message = "{invalid.order.items}")
     private List<OrderItem> orderItems;
     /**
      * A sum of order item prices;
@@ -18,9 +23,17 @@ public class Order {
      */
     private BigDecimal totalPrice;
 
+    @NotBlank(message = "{field.required}")
     private String firstName;
+
+    @NotBlank(message = "{field.required}")
     private String lastName;
+
+    @NotBlank(message = "{field.required}")
     private String deliveryAddress;
+
+    @NotBlank(message = "{field.required}")
+    @PhoneNumber(message = "{invalid.phone.number}")
     private String contactPhoneNo;
 
     private OrderStatus status;

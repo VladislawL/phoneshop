@@ -27,7 +27,7 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
     private OrderDao orderDao;
 
     @Test
-    public void shouldCreateOrder() {
+    public void shouldCreateOrder() throws OutOfStockException {
         Cart cart = new Cart();
         CartItem cartItem = new CartItem(1L, 1L);
         List<CartItem> cartItems = new ArrayList<>();
@@ -76,7 +76,7 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
 
         orderService.placeOrder(expectedOrder);
 
-        Order order = orderDao.getOrder(uuid).get();
+        Order order = orderDao.getOrderByUUID(uuid).get();
 
         assertThat(order).matches(o -> o.getSubtotal().equals(expectedOrder.getSubtotal()))
                 .matches(o -> o.getDeliveryPrice().equals(expectedOrder.getDeliveryPrice()))

@@ -6,7 +6,8 @@ import com.es.core.model.order.Order;
 import java.util.UUID;
 
 public interface OrderService {
-    Order getOrder(UUID uuid);
-    Order createOrder(Cart cart);
+    Order getOrderByUUID(UUID uuid);
+    Order getOrderById(Long id);
+    Order createOrder(Cart cart) throws OutOfStockException;
     void placeOrder(Order order) throws OutOfStockException;
 }

@@ -10,11 +10,11 @@
     <mvc:resources mapping="/resources/**" location="/resources/" />
     <mvc:interceptors>
         <mvc:interceptor>
-            <mvc:mapping path="/*" />
+            <mvc:mapping path="/**" />
             <bean class="com.es.phoneshop.web.interceptor.MiniCartInterceptor" />
         </mvc:interceptor>
         <mvc:interceptor>
-            <mvc:mapping path="/*" />
+            <mvc:mapping path="/**" />
             <bean class="com.es.phoneshop.web.interceptor.CurrencyInterceptor" />
         </mvc:interceptor>
     </mvc:interceptors>
@@ -32,6 +32,7 @@
             <list>
                 <bean class="com.es.phoneshop.web.controller.converter.StringToSortOrder"/>
                 <bean class="com.es.phoneshop.web.controller.converter.StringIdToPhone" />
+                <bean class="com.es.phoneshop.web.controller.converter.OrderUUIDToOrderItems" />
             </list>
         </property>
     </bean>

@@ -3,12 +3,18 @@ package com.es.core.cart;
 import com.es.core.model.phone.Phone;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.Map;
 
 public class CartPageData {
 
     private Map<Phone, Long> cartItems;
     private BigDecimal subTotalPrice;
+
+    public CartPageData() {
+        cartItems = new HashMap<>();
+        subTotalPrice = BigDecimal.ZERO;
+    }
 
     public Map<Phone, Long> getCartItems() {
         return cartItems;

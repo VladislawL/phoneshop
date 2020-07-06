@@ -36,3 +36,7 @@
     flex-direction: row;
     justify-content: space-between;
 }
+
+.check-table {
+    width: 30%;
+}

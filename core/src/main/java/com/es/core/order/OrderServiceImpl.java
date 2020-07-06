@@ -30,17 +30,27 @@ public class OrderServiceImpl implements OrderService {
     private OrderDao orderDao;
 
     @Override
-    public Order getOrder(UUID uuid) throws OrderNotFoundException {
-        Optional<Order> order = orderDao.getOrder(uuid);
+    public Order getOrderByUUID(UUID uuid) throws OrderNotFoundException {
+        Optional<Order> order = orderDao.getOrderByUUID(uuid);
         if (order.isPresent()) {
             return order.get();
         } else {
-            throw new OrderNotFoundException();
+            throw new OrderNotFoundException(uuid.toString());
         }
     }
 
     @Override
-    public Order createOrder(Cart cart) {
+    public Order getOrderById(Long id) {
+        Optional<Order> order = orderDao.getOrderById(id);
+        if (order.isPresent()) {
+            return order.get();
+        } else {
+            throw new OrderNotFoundException(id.toString());
+        }
+    }
+
+    @Override
+    public Order createOrder(Cart cart) throws OutOfStockException {
         Order order = new Order();
 
         order.setUuid(UUID.randomUUID());
