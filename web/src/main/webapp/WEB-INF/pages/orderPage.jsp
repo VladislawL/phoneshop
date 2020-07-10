@@ -8,11 +8,7 @@
     <a href="<c:url value="/cart" />">
         <input type="button" value="Back to cart">
     </a>
-    <form:form method="post" modelAttribute="order">
-        <input type="hidden" name="uuid" value="${order.uuid}" />
-        <input type="hidden" name="id" value="${order.id}" />
-        <input type="hidden" name="status" value="${order.status}" />
-        <form:input path="orderItems" value="${order.uuid}" type="hidden" />
+    <form:form method="post" modelAttribute="orderPageData">
         <form:errors path="orderItems" cssClass="error" />
         <table class="table">
             <thead class="thead-light">

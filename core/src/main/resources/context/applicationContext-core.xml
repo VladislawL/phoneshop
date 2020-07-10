@@ -21,9 +21,7 @@
         <constructor-arg name="mappedClass" value="com.es.core.model.phone.Color" />
     </bean>
 
-    <bean id="orderRowMapper" class="com.es.core.model.order.OrderRowMapper" >
-        <property name="namedParameterJdbcTemplate" ref="namedParameterJdbcTemplate" />
-    </bean>
+    <bean id="orderRowMapper" class="com.es.core.model.order.OrderRowMapper" />
 
     <bean id="orderItemRowMapper" class="com.es.core.model.order.OrderItemRowMapper">
         <property name="phoneService" ref="defaultPhoneService" />

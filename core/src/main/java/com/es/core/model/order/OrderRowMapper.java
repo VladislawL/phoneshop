@@ -9,8 +9,6 @@ import java.util.Arrays;
 
 public class OrderRowMapper extends BeanPropertyRowMapper<Order> {
 
-    private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
-
     public OrderRowMapper() {
         super(Order.class);
     }
@@ -20,16 +18,11 @@ public class OrderRowMapper extends BeanPropertyRowMapper<Order> {
         Order order = super.mapRow(rs, rowNumber);
 
         int statusId = rs.getInt("status");
-        OrderStatus orderStatus = Arrays.asList(OrderStatus.values()).stream()
-                .filter(s -> s.getId() == statusId)
-                .findFirst().get();
+        OrderStatus orderStatus = OrderStatus.values()[statusId];
 
         order.setStatus(orderStatus);
 
         return order;
     }
 
-    public void setNamedParameterJdbcTemplate(NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-    }
 }

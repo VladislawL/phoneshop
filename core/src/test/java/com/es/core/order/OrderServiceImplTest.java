@@ -27,7 +27,7 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
     private OrderDao orderDao;
 
     @Test
-    public void shouldCreateOrder() throws OutOfStockException {
+    public void shouldCreateOrder() {
         Cart cart = new Cart();
         CartItem cartItem = new CartItem(1L, 1L);
         List<CartItem> cartItems = new ArrayList<>();
@@ -41,6 +41,24 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
                 .matches(o -> o.getDeliveryPrice().equals(BigDecimal.valueOf(1)))
                 .matches(o -> o.getTotalPrice().equals(BigDecimal.valueOf(2)))
                 .matches(o -> o.getStatus().equals(OrderStatus.NEW));
+    }
+
+    @Test
+    public void shouldUpdateOrder() {
+        Cart cart = new Cart();
+        CartItem cartItem = new CartItem(1L, 1L);
+        List<CartItem> cartItems = new ArrayList<>();
+        cartItems.add(cartItem);
+        cart.setCartItems(cartItems);
+        cart.setSubTotalPrice(BigDecimal.ONE);
+
+        Order order = new Order();
+
+        orderService.updateOrder(order, cart);
+
+        assertThat(order).matches(o -> o.getSubtotal().equals(BigDecimal.ONE))
+                .matches(o -> o.getDeliveryPrice().equals(BigDecimal.valueOf(1)))
+                .matches(o -> o.getTotalPrice().equals(BigDecimal.valueOf(2)));
     }
 
     @Test

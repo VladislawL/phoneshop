@@ -5,6 +5,7 @@ import com.es.core.cart.CartItem;
 import com.es.core.dao.OrderDao;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
+import com.es.core.model.order.OrderPageData;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
 import com.es.core.services.PhoneService;
@@ -50,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public Order createOrder(Cart cart) throws OutOfStockException {
+    public Order createOrder(Cart cart) {
         Order order = new Order();
 
         order.setUuid(UUID.randomUUID());
@@ -60,9 +61,23 @@ public class OrderServiceImpl implements OrderService {
         priceCalculator.calculateTotalPrice(order);
         order.setStatus(OrderStatus.NEW);
 
-        orderDao.save(order);
-
         return order;
+    }
+
+    @Override
+    public void updateOrder(Order order, Cart cart) {
+        order.setOrderItems(getOrderItemsFromCart(cart, order));
+        order.setSubtotal(cart.getSubTotalPrice());
+        order.setDeliveryPrice(priceCalculator.getDeliveryPrice());
+        priceCalculator.calculateTotalPrice(order);
+    }
+
+    @Override
+    public void setContactInformation(Order order, OrderPageData orderPageData) {
+        order.setFirstName(orderPageData.getFirstName());
+        order.setLastName(orderPageData.getLastName());
+        order.setContactPhoneNo(orderPageData.getContactPhoneNo());
+        order.setDeliveryAddress(orderPageData.getDeliveryAddress());
     }
 
     @Override

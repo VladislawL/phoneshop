@@ -32,7 +32,6 @@
             <list>
                 <bean class="com.es.phoneshop.web.controller.converter.StringToSortOrder"/>
                 <bean class="com.es.phoneshop.web.controller.converter.StringIdToPhone" />
-                <bean class="com.es.phoneshop.web.controller.converter.OrderUUIDToOrderItems" />
             </list>
         </property>
     </bean>
