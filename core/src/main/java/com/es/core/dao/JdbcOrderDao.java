@@ -4,8 +4,6 @@ import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderItemRowMapper;
 import com.es.core.model.order.OrderRowMapper;
-import com.es.core.order.OutOfStockException;
-import com.es.core.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -13,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +20,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Component
+@Transactional
 public class JdbcOrderDao implements OrderDao {
 
     @Autowired
@@ -31,9 +31,6 @@ public class JdbcOrderDao implements OrderDao {
 
     @Autowired
     private OrderItemRowMapper orderItemRowMapper;
-
-    @Autowired
-    private StockDao stockDao;
 
     private static final String INSERT_ORDER_QUERY = "insert into orders (uuid, firstName, lastName, deliveryAddress, " +
             "contactPhoneNo, subtotal, deliveryPrice, totalPrice, status) " +
@@ -90,8 +87,7 @@ public class JdbcOrderDao implements OrderDao {
     }
 
     @Override
-    public void save(Order order) throws OutOfStockException {
-        checkOrderItems(order.getOrderItems());
+    public void save(Order order) {
         if (order.getId() == null) {
             insert(order);
         } else {
@@ -99,7 +95,7 @@ public class JdbcOrderDao implements OrderDao {
         }
     }
 
-    private void insert(Order order) throws OutOfStockException {
+    private void insert(Order order) {
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         namedParameterJdbcTemplate.update(INSERT_ORDER_QUERY, getOrderParameters(order), keyHolder);
@@ -108,28 +104,21 @@ public class JdbcOrderDao implements OrderDao {
         insertOrderItems(order);
     }
 
-    private void update(Order order) throws OutOfStockException {
+    private void update(Order order) {
         namedParameterJdbcTemplate.update(UPDATE_ORDER_QUERY, getOrderParameters(order));
         Map<String, Object> uuidParameter = Collections.singletonMap("uuid", order.getUuid());
-        List<OrderItem> orderItems = order.getOrderItems();
 
-        for (int i = 0; i < orderItems.size(); i++) {
-            namedParameterJdbcTemplate.update(DELETE_ORDER_ITEM_BY_UUID_QUERY, uuidParameter);
-        }
+        namedParameterJdbcTemplate.update(DELETE_ORDER_ITEM_BY_UUID_QUERY, uuidParameter);
 
         insertOrderItems(order);
     }
 
-    private void insertOrderItems(Order order) throws OutOfStockException {
+    private void insertOrderItems(Order order) {
         List<OrderItem> orderItems = order.getOrderItems();
 
         for (OrderItem orderItem : orderItems) {
             orderItem.setOrder(order);
             namedParameterJdbcTemplate.update(INSERT_ORDER_ITEM_QUERY, getOrderItemParameters(orderItem));
-        }
-
-        for (OrderItem orderItem : orderItems) {
-            stockDao.decreaseProductStock(orderItem.getPhone().getId(), orderItem.getQuantity());
         }
     }
 
@@ -153,16 +142,6 @@ public class JdbcOrderDao implements OrderDao {
         parameters.addValue("orderId", orderItem.getOrder().getId());
         parameters.addValue("quantity", orderItem.getQuantity());
         return parameters;
-    }
-
-    private void checkOrderItems(List<OrderItem> orderItems) throws OutOfStockException {
-        for (OrderItem orderItem : orderItems) {
-            Integer stock = stockDao.getStock(orderItem.getPhone().getId()).getStock();
-
-            if (stock < orderItem.getQuantity()) {
-                throw new OutOfStockException();
-            }
-        }
     }
 
 }

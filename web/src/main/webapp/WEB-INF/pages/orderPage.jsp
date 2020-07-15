@@ -19,24 +19,24 @@
             </c:forEach>
             <th>Quantity</th>
             </thead>
-            <c:forEach var="orderItem" items="${order.orderItems}">
+            <c:forEach var="cartItem" items="${cartPageData.cartItems}">
                 <tr>
                     <td>
-                        <a href="<c:url value="/productDetails/${orderItem.phone.id}"/>">
-                            <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${orderItem.phone.imageUrl}">
+                        <a href="<c:url value="/productDetails/${cartItem.key.id}"/>">
+                            <img src="https://raw.githubusercontent.com/andrewosipenko/phoneshop-ext-images/master/${cartItem.key.imageUrl}">
                         </a>
                     </td>
-                    <td><c:out value="${orderItem.phone.brand}" /></td>
-                    <td><c:out value="${orderItem.phone.model}" /></td>
+                    <td><c:out value="${cartItem.key.brand}" /></td>
+                    <td><c:out value="${cartItem.key.model}" /></td>
                     <td>
-                        <c:forEach var="color" items="${orderItem.phone.colors}">
+                        <c:forEach var="color" items="${cartItem.key.colors}">
                             <c:out value="${color.code}" />
                         </c:forEach>
                     </td>
-                    <td><c:out value="${orderItem.phone.displaySizeInches}" />"</td>
-                    <td><fmt:formatNumber value="${orderItem.phone.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
+                    <td><c:out value="${cartItem.key.displaySizeInches}" />"</td>
+                    <td><fmt:formatNumber value="${cartItem.key.price}" type="currency" currencySymbol="${currencySymbol}" /></td>
                     <td>
-                        <c:out value="${orderItem.quantity}" />
+                        <c:out value="${cartItem.value}" />
                     </td>
                 </tr>
             </c:forEach>
@@ -48,7 +48,7 @@
                 </td>
                 <td>
                     <fmt:formatNumber value="${order.subtotal}" type="currency" currencySymbol="${currencySymbol}" />
-                    <input type="hidden" name="subtotal" value="${order.subtotal}" />
+                    <input type="hidden" name="subtotal" value="${cartPageData.subTotalPrice}" />
                 </td>
             </tr>
             <tr>
@@ -56,7 +56,7 @@
                     Delivery price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${order.deliveryPrice}" type="currency" currencySymbol="${currencySymbol}" />
+                    <fmt:formatNumber value="${deliveryPrice}" type="currency" currencySymbol="${currencySymbol}" />
                     <input type="hidden" name="deliveryPrice" value="${order.deliveryPrice}" />
                 </td>
             </tr>
@@ -65,7 +65,7 @@
                     Total price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${order.totalPrice}" type="currency" currencySymbol="${currencySymbol}" />
+                    <fmt:formatNumber value="${totalPrice}" type="currency" currencySymbol="${currencySymbol}" />
                     <input type="hidden" name="totalPrice" value="${order.totalPrice}" />
                 </td>
             </tr>

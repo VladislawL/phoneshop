@@ -24,7 +24,7 @@
     <bean id="orderRowMapper" class="com.es.core.model.order.OrderRowMapper" />
 
     <bean id="orderItemRowMapper" class="com.es.core.model.order.OrderItemRowMapper">
-        <property name="phoneService" ref="defaultPhoneService" />
+        <property name="phoneDao" ref="jdbcPhoneDao" />
     </bean>
 
     <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">

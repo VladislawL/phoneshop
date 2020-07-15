@@ -5,7 +5,6 @@ import com.es.core.model.order.OrderItem;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.model.phone.Phone;
 import com.es.core.order.OutOfStockException;
-import com.es.core.services.StockService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
 
     @Autowired
-    private JdbcOrderDao jdbcOrderDao;
-
-    @Autowired
-    private StockService stockService;
+    private OrderDao jdbcOrderDao;
 
     @Test
     public void shouldGetOrderByUUID() {
@@ -82,7 +78,6 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
     @Test
     public void shouldUpdateOrder() throws OutOfStockException {
         long quantity = 5L;
-        long expectedStock = 0L;
         long phoneId = 1L;
         Order expectedOrder = new Order();
         Phone phone = new Phone();
@@ -107,7 +102,6 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
         jdbcOrderDao.save(expectedOrder);
 
         Optional<Order> order = jdbcOrderDao.getOrderByUUID(uuid);
-        long stock = stockService.getStock(phoneId);
 
         assertThat(order).isPresent()
                 .get()
@@ -115,7 +109,6 @@ public class JdbcOrderDaoTest extends AbstractDataBaseIntegrationTest {
         assertThat(order.get().getOrderItems()).isNotNull()
                 .asList().hasSize(1)
                 .anyMatch(o -> ((OrderItem) o).getPhone().equals(orderItem.getPhone()));
-        assertThat(stock).isEqualTo(expectedStock);
     }
 
 }

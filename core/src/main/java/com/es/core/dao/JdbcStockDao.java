@@ -50,11 +50,7 @@ public class JdbcStockDao implements StockDao {
 
         Long stock = namedParameterJdbcTemplate.queryForObject(SELECT_STOCK_BY_PHONE_ID, phoneIdParameter, Long.class);
 
-        if (stock >= quantity) {
-            return true;
-        } else {
-            return false;
-        }
+        return stock >= quantity;
     }
 
 }

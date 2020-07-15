@@ -8,5 +8,5 @@ import java.math.BigDecimal;
 public interface PriceCalculator {
     void calculateSubtotalPrice(Cart cart);
     BigDecimal getDeliveryPrice();
-    void calculateTotalPrice(Order order);
+    BigDecimal calculateTotalPrice(Cart cart);
 }

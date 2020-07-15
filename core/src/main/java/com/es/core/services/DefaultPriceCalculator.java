@@ -33,8 +33,8 @@ public class DefaultPriceCalculator implements PriceCalculator {
     }
 
     @Override
-    public void calculateTotalPrice(Order order) {
-        order.setTotalPrice(order.getSubtotal().add(order.getDeliveryPrice()));
+    public BigDecimal calculateTotalPrice(Cart cart) {
+        return cart.getSubTotalPrice().add(deliveryPrice);
     }
 
     @Override

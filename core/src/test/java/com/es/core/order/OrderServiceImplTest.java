@@ -44,24 +44,6 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
     }
 
     @Test
-    public void shouldUpdateOrder() {
-        Cart cart = new Cart();
-        CartItem cartItem = new CartItem(1L, 1L);
-        List<CartItem> cartItems = new ArrayList<>();
-        cartItems.add(cartItem);
-        cart.setCartItems(cartItems);
-        cart.setSubTotalPrice(BigDecimal.ONE);
-
-        Order order = new Order();
-
-        orderService.updateOrder(order, cart);
-
-        assertThat(order).matches(o -> o.getSubtotal().equals(BigDecimal.ONE))
-                .matches(o -> o.getDeliveryPrice().equals(BigDecimal.valueOf(1)))
-                .matches(o -> o.getTotalPrice().equals(BigDecimal.valueOf(2)));
-    }
-
-    @Test
     public void shouldPlaceOrder() throws OutOfStockException {
         Order expectedOrder = new Order();
 

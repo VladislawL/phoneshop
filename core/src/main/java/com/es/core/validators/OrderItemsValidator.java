@@ -1,7 +1,7 @@
 package com.es.core.validators;
 
-import com.es.core.dao.StockDao;
 import com.es.core.model.order.OrderItem;
+import com.es.core.services.StockService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderItemsValidator implements Validator {
 
     @Autowired
-    private StockDao stockDao;
+    private StockService stockService;
 
     private static final String INVALID_ORDER_ITEMS_VALIDATION_MESSAGE = "You're going to order as much phones as we don't have. Go back to cart to fix";
 
@@ -24,11 +24,11 @@ public class OrderItemsValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        List<?> orderItems = (List) o;
-        for (Object object : orderItems) {
-            OrderItem orderItem = (OrderItem) object;
-            if (!stockDao.checkStock(orderItem.getPhone().getId(), orderItem.getQuantity())) {
+        List<OrderItem>  orderItems = (List<OrderItem>) o;
+        for (OrderItem orderItem : orderItems) {
+            if (stockService.getStock(orderItem.getPhone().getId()) < orderItem.getQuantity()) {
                 errors.rejectValue("orderItems", "invalid.order.items", INVALID_ORDER_ITEMS_VALIDATION_MESSAGE);
+                break;
             }
         }
     }

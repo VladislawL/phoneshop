@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface OrderDao {
     Optional<Order> getOrderByUUID(UUID uuid);
     Optional<Order> getOrderById(Long id);
-    void save(Order order) throws OutOfStockException;
+    void save(Order order);
 }
