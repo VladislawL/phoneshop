@@ -14,10 +14,8 @@ import com.es.core.services.StockService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,9 +33,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Autowired
     private StockService stockService;
-
-    @Value("${delivery.price}")
-    private BigDecimal deliveryPrice;
 
     @Autowired
     private StockDao stockDao;
@@ -66,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         order.setUuid(UUID.randomUUID());
         order.setOrderItems(getOrderItemsFromCart(cart, order));
         order.setSubtotal(cart.getSubTotalPrice());
-        order.setDeliveryPrice(deliveryPrice);
+        order.setDeliveryPrice(priceCalculator.getDeliveryPrice());
         order.setTotalPrice(priceCalculator.calculateTotalPrice(cart));
         order.setStatus(OrderStatus.NEW);
 
