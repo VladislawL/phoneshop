@@ -50,11 +50,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order getOrderByUUID(UUID uuid) throws OrderNotFoundException {
         Optional<Order> order = orderDao.getOrderByUUID(uuid);
-        if (order.isPresent()) {
-            return order.get();
-        } else {
-            throw new OrderNotFoundException(uuid.toString());
-        }
+        return order.orElseThrow(() -> new OrderNotFoundException(uuid.toString()));
     }
 
     @Override
