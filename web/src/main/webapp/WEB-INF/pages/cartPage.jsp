@@ -61,7 +61,9 @@
                     </div>
                     <div class="cart-action">
                         <input name="update" type="submit" value="Update" />
-                        <input name ="order" type="submit" value="Order" />
+                        <a href="<c:url value="/order"/>">
+                            <input name ="order" type="button" value="Order" />
+                        </a>
                     </div>
                 </div>
             </form:form>

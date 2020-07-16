@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -72,8 +73,12 @@ public class OrderServiceImpl implements OrderService {
     public void placeOrder(Order order) throws OutOfStockException {
         checkOrderItems(order.getOrderItems());
         orderDao.save(order);
-        stockService.decreaseProductStock(order.getOrderItems().stream()
-                .collect(Collectors.toMap(orderItem -> orderItem.getPhone().getId(), OrderItem::getQuantity)));
+        Map<Long, Long> mapOrderItems = order.getOrderItems().stream()
+                .collect(Collectors.toMap(orderItem -> orderItem.getPhone().getId(), OrderItem::getQuantity));
+
+        for (Map.Entry<Long, Long> orderItem : mapOrderItems.entrySet()) {
+            stockService.decreaseProductStock(orderItem.getKey(), orderItem.getValue());
+        }
 
         LOGGER.info("Order with id = {}, uuid = {}, subtotal = {}, deliveryPrice = {}, totalPrice = {}, firstName = {}, " +
                 "lastName = {}, contactPhoneNo = {}, deliveryAddress = {} was created", order.getId(), order.getUuid(),

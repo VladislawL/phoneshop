@@ -9,12 +9,13 @@ import com.es.core.order.OutOfStockException;
 import com.es.core.services.AttributeService;
 import com.es.core.services.CartPageDataService;
 import com.es.core.services.PriceCalculator;
-import com.es.core.validators.OrderItemsValidator;
+import com.es.core.validators.CartItemsValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -34,7 +35,7 @@ public class OrderPageController {
     private AttributeService attributeService;
 
     @Autowired
-    private OrderItemsValidator orderItemsValidator;
+    private CartItemsValidator cartItemsValidator;
 
     @Autowired
     private CartPageDataService cartPageDataService;
@@ -43,8 +44,8 @@ public class OrderPageController {
     private PriceCalculator priceCalculator;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String getOrder(Model model) {
-        model.addAttribute("orderPageData", new OrderPageData());
+    public String getOrder(@ModelAttribute OrderPageData orderPageData, Model model) {
+        model.addAttribute("orderPageData", orderPageData);
         addOrderPageAttributes(model);
 
         return "orderPage";
@@ -53,18 +54,15 @@ public class OrderPageController {
     @RequestMapping(method = RequestMethod.POST)
     public String placeOrder(@Validated OrderPageData orderPageData,
                              Errors errors, Model model) throws OutOfStockException {
-        Order order = orderService.createOrder(cart);
-        orderItemsValidator.validate(order.getOrderItems(), errors);
+        cartItemsValidator.validate(cart.getCartItems(), errors);
         if (!errors.hasErrors()) {
+            Order order = orderService.createOrder(cart);
             setContactInformation(order, orderPageData);
             orderService.placeOrder(order);
 
             return "redirect:orderOverview/" + order.getUuid();
         } else {
-            model.addAttribute("orderPageData", orderPageData);
-            addOrderPageAttributes(model);
-
-            return "orderPage";
+            return getOrder(orderPageData, model);
         }
     }
 
@@ -79,7 +77,6 @@ public class OrderPageController {
         CartPageData cartPageData = cartPageDataService.createCartPageData();
 
         model.addAttribute("deliveryPrice", priceCalculator.getDeliveryPrice());
-        model.addAttribute("totalPrice", priceCalculator.calculateTotalPrice(cart));
         model.addAttribute("attributes", attributeService.getAttributes());
         model.addAttribute("cartPageData", cartPageData);
     }

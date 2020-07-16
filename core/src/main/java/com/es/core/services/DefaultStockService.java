@@ -5,8 +5,6 @@ import com.es.core.order.OutOfStockException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
-
 @Service
 public class DefaultStockService implements StockService {
 
@@ -19,9 +17,7 @@ public class DefaultStockService implements StockService {
     }
 
     @Override
-    public void decreaseProductStock(Map<Long, Long> phones) throws OutOfStockException {
-        for (Map.Entry<Long, Long> phone : phones.entrySet()) {
-            stockDao.decreaseProductStock(phone.getKey(), phone.getValue());
-        }
+    public void decreaseProductStock(long phoneId, long quantity) throws OutOfStockException {
+        stockDao.decreaseProductStock(phoneId, quantity);
     }
 }

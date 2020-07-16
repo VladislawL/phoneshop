@@ -9,7 +9,7 @@
         <input type="button" value="Back to cart">
     </a>
     <form:form method="post" modelAttribute="orderPageData">
-        <form:errors path="orderItems" cssClass="error" />
+        <form:errors path="cartItems" cssClass="error" />
         <table class="table">
             <thead class="thead-light">
             <c:forEach var="attribute" items="${attributes}">
@@ -47,7 +47,7 @@
                     Subtotal price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${order.subtotal}" type="currency" currencySymbol="${currencySymbol}" />
+                    <fmt:formatNumber value="${cartPageData.subTotalPrice}" type="currency" currencySymbol="${currencySymbol}" />
                     <input type="hidden" name="subtotal" value="${cartPageData.subTotalPrice}" />
                 </td>
             </tr>
@@ -57,7 +57,7 @@
                 </td>
                 <td>
                     <fmt:formatNumber value="${deliveryPrice}" type="currency" currencySymbol="${currencySymbol}" />
-                    <input type="hidden" name="deliveryPrice" value="${order.deliveryPrice}" />
+                    <input type="hidden" name="deliveryPrice" value="${deliveryPrice}" />
                 </td>
             </tr>
             <tr>
@@ -65,8 +65,8 @@
                     Total price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${totalPrice}" type="currency" currencySymbol="${currencySymbol}" />
-                    <input type="hidden" name="totalPrice" value="${order.totalPrice}" />
+                    <fmt:formatNumber value="${cartPageData.subTotalPrice.add(deliveryPrice)}" type="currency" currencySymbol="${currencySymbol}" />
+                    <input type="hidden" name="totalPrice" value="${cartPageData.subTotalPrice.add(deliveryPrice)}" />
                 </td>
             </tr>
         </table>

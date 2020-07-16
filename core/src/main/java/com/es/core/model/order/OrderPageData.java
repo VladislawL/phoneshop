@@ -1,5 +1,6 @@
 package com.es.core.model.order;
 
+import com.es.core.cart.CartItem;
 import com.es.core.validators.PhoneNumber;
 
 import javax.validation.constraints.NotBlank;
@@ -7,7 +8,7 @@ import java.util.List;
 
 public class OrderPageData {
 
-    private List<OrderItem> orderItems;
+    private List<CartItem> cartItems;
 
     @NotBlank(message = "{field.required}")
     private String firstName;
@@ -22,12 +23,12 @@ public class OrderPageData {
     @PhoneNumber(message = "{invalid.phone.number}")
     private String contactPhoneNo;
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
+    public List<CartItem> getCartItems() {
+        return cartItems;
     }
 
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
+    public void setCartItems(List<CartItem> cartItems) {
+        this.cartItems = cartItems;
     }
 
     public String getFirstName() {
