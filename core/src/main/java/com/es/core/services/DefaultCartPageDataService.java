@@ -39,6 +39,8 @@ public class DefaultCartPageDataService implements CartPageDataService {
         }
 
         cartPageData.setSubTotalPrice(cart.getSubTotalPrice());
+        cartPageData.setDeliveryPrice(cart.getDeliveryPrice());
+        cartPageData.setTotalPrice(cart.getTotalPrice());
         cartPageData.setCartItems(cartItems);
 
         return cartPageData;

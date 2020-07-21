@@ -1,14 +1,19 @@
 package com.es.core.model.order;
 
+import com.es.core.validators.PhoneNumber;
+
+import javax.validation.constraints.NotBlank;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
-public class Order
-{
+public class Order {
     private Long id;
+    private UUID uuid;
+
     private List<OrderItem> orderItems;
     /**
-     *  A sum of order item prices;
+     * A sum of order item prices;
      */
     private BigDecimal subtotal;
     private BigDecimal deliveryPrice;
@@ -17,9 +22,17 @@ public class Order
      */
     private BigDecimal totalPrice;
 
+    @NotBlank(message = "{field.required}")
     private String firstName;
+
+    @NotBlank(message = "{field.required}")
     private String lastName;
+
+    @NotBlank(message = "{field.required}")
     private String deliveryAddress;
+
+    @NotBlank(message = "{field.required}")
+    @PhoneNumber(message = "{invalid.phone.number}")
     private String contactPhoneNo;
 
     private OrderStatus status;
@@ -30,6 +43,14 @@ public class Order
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public List<OrderItem> getOrderItems() {

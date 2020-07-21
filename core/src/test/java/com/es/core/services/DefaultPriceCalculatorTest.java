@@ -10,6 +10,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -43,6 +44,7 @@ public class DefaultPriceCalculatorTest {
         long quantity2 = 2L;
         Phone phone1 = createTestPhone(phoneId1, BigDecimal.ONE);
         Phone phone2 = createTestPhone(phoneId2, BigDecimal.ONE);
+        ReflectionTestUtils.setField(priceCalculator, "deliveryPrice", new BigDecimal(5L));
 
         cartItems.add(new CartItem(phoneId1, quantity1));
         cartItems.add(new CartItem(phoneId2, quantity2));
@@ -51,7 +53,7 @@ public class DefaultPriceCalculatorTest {
         when(phoneService.getPhoneById(phoneId1)).thenReturn(phone1);
         when(phoneService.getPhoneById(phoneId2)).thenReturn(phone2);
 
-        priceCalculator.calculateSubtotalPrice(cart);
+        priceCalculator.calculateCart(cart);
 
         verify(cart).setSubTotalPrice(subTotalPriceArgumentCaptor.capture());
 
