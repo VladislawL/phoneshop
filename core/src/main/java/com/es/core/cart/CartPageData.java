@@ -10,6 +10,8 @@ public class CartPageData {
 
     private Map<Phone, Long> cartItems;
     private BigDecimal subTotalPrice;
+    private BigDecimal deliveryPrice;
+    private BigDecimal totalPrice;
 
     public CartPageData() {
         cartItems = new HashMap<>();
@@ -30,5 +32,21 @@ public class CartPageData {
 
     public void setSubTotalPrice(BigDecimal subTotalPrice) {
         this.subTotalPrice = subTotalPrice;
+    }
+
+    public BigDecimal getDeliveryPrice() {
+        return deliveryPrice;
+    }
+
+    public void setDeliveryPrice(BigDecimal deliveryPrice) {
+        this.deliveryPrice = deliveryPrice;
+    }
+
+    public BigDecimal getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(BigDecimal totalPrice) {
+        this.totalPrice = totalPrice;
     }
 }

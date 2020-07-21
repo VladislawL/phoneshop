@@ -6,15 +6,12 @@ import com.es.core.validators.QuantityValidator;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -65,7 +62,7 @@ public class HttpSessionCartServiceTest {
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
-        verify(priceCalculatorService).calculateSubtotalPrice(cart);
+        verify(priceCalculatorService).calculateCart(cart);
         assertThat(cartItems).asList()
                 .hasSize(2)
                 .contains(new CartItem(phoneId, quantity));
@@ -103,7 +100,7 @@ public class HttpSessionCartServiceTest {
 
         httpSessionCartService.addPhone(phoneId, quantity);
 
-        verify(priceCalculatorService).calculateSubtotalPrice(cart);
+        verify(priceCalculatorService).calculateCart(cart);
         assertThat(cartItems).asList()
                 .hasSize(1)
                 .contains(new CartItem(phoneId, quantity));
@@ -120,7 +117,7 @@ public class HttpSessionCartServiceTest {
 
         httpSessionCartService.updatePhone(cartItem);
 
-        verify(priceCalculatorService).calculateSubtotalPrice(cart);
+        verify(priceCalculatorService).calculateCart(cart);
         assertThat(cartItems).asList()
                 .hasSize(1)
                 .contains(new CartItem(phoneId, quantity));
@@ -137,7 +134,7 @@ public class HttpSessionCartServiceTest {
 
         httpSessionCartService.updatePhone(cartItem);
 
-        verify(priceCalculatorService).calculateSubtotalPrice(cart);
+        verify(priceCalculatorService).calculateCart(cart);
         assertThat(cartItems).asList()
                 .hasSize(2)
                 .contains(new CartItem(phoneId, quantity));
@@ -149,7 +146,7 @@ public class HttpSessionCartServiceTest {
 
         httpSessionCartService.remove(phoneId);
 
-        verify(priceCalculatorService).calculateSubtotalPrice(cart);
+        verify(priceCalculatorService).calculateCart(cart);
         assertThat(cartItems).asList()
                 .hasSize(0);
     }

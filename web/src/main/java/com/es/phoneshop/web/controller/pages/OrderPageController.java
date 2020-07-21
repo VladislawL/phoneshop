@@ -45,6 +45,7 @@ public class OrderPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String getOrder(@ModelAttribute OrderPageData orderPageData, Model model) {
+        priceCalculator.calculateCart(cart);
         model.addAttribute("orderPageData", orderPageData);
         addOrderPageAttributes(model);
 
@@ -76,7 +77,6 @@ public class OrderPageController {
     private void addOrderPageAttributes(Model model) {
         CartPageData cartPageData = cartPageDataService.createCartPageData();
 
-        model.addAttribute("deliveryPrice", priceCalculator.getDeliveryPrice());
         model.addAttribute("attributes", attributeService.getAttributes());
         model.addAttribute("cartPageData", cartPageData);
     }

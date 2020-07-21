@@ -56,8 +56,8 @@
                     Delivery price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${deliveryPrice}" type="currency" currencySymbol="${currencySymbol}" />
-                    <input type="hidden" name="deliveryPrice" value="${deliveryPrice}" />
+                    <fmt:formatNumber value="${cartPageData.deliveryPrice}" type="currency" currencySymbol="${currencySymbol}" />
+                    <input type="hidden" name="deliveryPrice" value="${cartPageData.deliveryPrice}" />
                 </td>
             </tr>
             <tr>
@@ -65,8 +65,8 @@
                     Total price
                 </td>
                 <td>
-                    <fmt:formatNumber value="${cartPageData.subTotalPrice.add(deliveryPrice)}" type="currency" currencySymbol="${currencySymbol}" />
-                    <input type="hidden" name="totalPrice" value="${cartPageData.subTotalPrice.add(deliveryPrice)}" />
+                    <fmt:formatNumber value="${cartPageData.totalPrice}" type="currency" currencySymbol="${currencySymbol}" />
+                    <input type="hidden" name="totalPrice" value="${cartPageData.totalPrice}" />
                 </td>
             </tr>
         </table>

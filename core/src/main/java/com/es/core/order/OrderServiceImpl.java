@@ -58,12 +58,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public Order createOrder(Cart cart) {
         Order order = new Order();
+        priceCalculator.calculateCart(cart);
 
         order.setUuid(UUID.randomUUID());
         order.setOrderItems(getOrderItemsFromCart(cart, order));
         order.setSubtotal(cart.getSubTotalPrice());
-        order.setDeliveryPrice(priceCalculator.getDeliveryPrice());
-        order.setTotalPrice(priceCalculator.calculateTotalPrice(cart));
+        order.setDeliveryPrice(cart.getDeliveryPrice());
+        order.setTotalPrice(cart.getTotalPrice());
         order.setStatus(OrderStatus.NEW);
 
         return order;

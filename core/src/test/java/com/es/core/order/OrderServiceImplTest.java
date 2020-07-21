@@ -37,9 +37,10 @@ public class OrderServiceImplTest extends AbstractDataBaseIntegrationTest {
 
         Order order = orderService.createOrder(cart);
 
-        assertThat(order).matches(o -> o.getSubtotal().equals(BigDecimal.ONE))
+        assertThat(order)
+                .matches(o -> o.getSubtotal().equals(BigDecimal.valueOf(1.0)))
                 .matches(o -> o.getDeliveryPrice().equals(BigDecimal.valueOf(1)))
-                .matches(o -> o.getTotalPrice().equals(BigDecimal.valueOf(2)))
+                .matches(o -> o.getTotalPrice().equals(BigDecimal.valueOf(2.0)))
                 .matches(o -> o.getStatus().equals(OrderStatus.NEW));
     }
 

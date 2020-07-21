@@ -2,7 +2,6 @@ package com.es.core.services;
 
 import com.es.core.cart.Cart;
 import com.es.core.cart.CartItem;
-import com.es.core.model.order.Order;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ public class DefaultPriceCalculator implements PriceCalculator {
     private BigDecimal deliveryPrice;
 
     @Override
-    public void calculateSubtotalPrice(Cart cart) {
+    public void calculateCart(Cart cart) {
         List<CartItem> cartItems = cart.getCartItems();
 
         BigDecimal subTotalPrice = cartItems.stream()
@@ -30,15 +29,7 @@ public class DefaultPriceCalculator implements PriceCalculator {
                 .reduce(BigDecimal::add).orElse(BigDecimal.ZERO);
 
         cart.setSubTotalPrice(subTotalPrice);
-    }
-
-    @Override
-    public BigDecimal calculateTotalPrice(Cart cart) {
-        return cart.getSubTotalPrice().add(deliveryPrice);
-    }
-
-    @Override
-    public BigDecimal getDeliveryPrice() {
-        return deliveryPrice;
+        cart.setDeliveryPrice(deliveryPrice);
+        cart.setTotalPrice(subTotalPrice.add(deliveryPrice));
     }
 }
