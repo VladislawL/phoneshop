@@ -56,6 +56,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> getOrders() {
+        return orderDao.getOrders();
+    }
+
+    @Override
     public Order createOrder(Cart cart) {
         Order order = new Order();
         priceCalculator.calculateCart(cart);
@@ -85,6 +90,11 @@ public class OrderServiceImpl implements OrderService {
                 "lastName = {}, contactPhoneNo = {}, deliveryAddress = {} was created", order.getId(), order.getUuid(),
                 order.getSubtotal(), order.getDeliveryPrice(), order.getTotalPrice(), order.getFirstName(), order.getLastName(),
                 order.getContactPhoneNo(), order.getDeliveryAddress());
+    }
+
+    @Override
+    public void updateOrder(Order order) {
+        orderDao.save(order);
     }
 
     private List<OrderItem> getOrderItemsFromCart(Cart cart, Order order) {
