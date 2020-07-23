@@ -2,6 +2,14 @@ $('input[name="add-to-cart"]').on("click", function() {
     var $this = $(this);
     var phoneId = $this.data("phoneId");
     var $quantityField = $("#" + phoneId);
+    var $header = $("meta[name='_csrf_header']").attr("content");
+    var $token = $("meta[name='_csrf']").attr("content");
+
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader($header, $token);
+        }
+    });
 
     $.ajax({
         type: "POST",
@@ -26,6 +34,14 @@ $('input[name="add-to-cart"]').on("click", function() {
 $('input[name="delete-cart-item"]').on("click", function() {
     var $this = $(this);
     var phoneId = $this.data("phoneId");
+    var $header = $("meta[name='_csrf_header']").attr("content");
+    var $token = $("meta[name='_csrf']").attr("content");
+
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader($header, $token);
+        }
+    });
 
     $.ajax({
         type: "DELETE",
@@ -48,4 +64,8 @@ function updateMiniCart(msg) {
     });
     $("#items-number").text(msg.miniCart.itemsNumber + " items");
     $("#subtotal-price").text(formatter.format(msg.miniCart.subTotalPrice));
+}
+
+function logoutFormSubmit() {
+    document.getElementById("logoutForm").submit();
 }
