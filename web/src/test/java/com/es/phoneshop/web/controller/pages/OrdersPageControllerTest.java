@@ -3,35 +3,26 @@ package com.es.phoneshop.web.controller.pages;
 import com.es.core.model.order.Order;
 import com.es.core.model.order.OrderStatus;
 import com.es.core.order.OrderService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.web.FilterChainProxy;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
-
-import java.util.ArrayList;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@IntegrationTest
 @RunWith(SpringJUnit4ClassRunner.class)
-@Transactional
-@ContextConfiguration(locations = {"classpath:applicationContext.xml",
-        "classpath:dispatcher-servlet.xml",
-        "classpath:spring-security.xml"})
-@WebAppConfiguration
 @Sql(value = "classpath:db/test-order.sql")
 public class OrdersPageControllerTest  {
 
@@ -83,7 +74,12 @@ public class OrdersPageControllerTest  {
     public void shouldChangeOrderStatus() throws Exception {
         OrderStatus expectedStatus = OrderStatus.DELIVERED;
 
-        mvc.perform(post("/admin/orders/1").param("orderStatus", expectedStatus.toString())
+        ObjectMapper objectMapper = new ObjectMapper();
+        String orderStatus = objectMapper.writeValueAsString(expectedStatus);
+
+        mvc.perform(put("/admin/orders/1")
+                    .contentType("application/json")
+                    .content(orderStatus)
                     .with(csrf())
                     .with(user("admin").password("password").roles("ADMIN")));
 

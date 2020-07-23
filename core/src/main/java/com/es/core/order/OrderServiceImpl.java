@@ -93,7 +93,9 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public void updateOrder(Order order) {
+    public void updateOrderStatus(Long orderId, OrderStatus orderStatus) {
+        Order order = orderDao.getOrderById(orderId).orElseThrow(() -> new OrderNotFoundException(orderId.toString()));
+        order.setStatus(orderStatus);
         orderDao.save(order);
     }
 

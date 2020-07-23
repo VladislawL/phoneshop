@@ -12,7 +12,7 @@
                 authentication-failure-url="/login?error"
                 username-parameter="username"
                 password-parameter="password" />
-        <logout logout-success-url="/login?logout"  />
+        <logout logout-success-url="/login?logout" delete-cookies="JSESSIONID" />
         <csrf/>
     </http>
 

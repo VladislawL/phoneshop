@@ -13,7 +13,7 @@
             <h3>Order number: <c:out value="${order.id}" /></h3>
         </div>
         <div class="col-6">
-            <h3>Order status: <c:out value="${order.status}" /></h3>
+            <h3>Order status: <span id="order-status"><c:out value="${order.status}" /></span></h3>
         </div>
     </div>
     <table class="table">
@@ -116,12 +116,6 @@
             </div>
         </div>
     </div>
-    <form method="post">
-        <button type="submit" name="orderStatus" value="DELIVERED">Delivered</button>
-        <button type="submit" name="orderStatus" value="REJECTED">Rejected</button>
-        <input type="hidden"
-               name="${_csrf.parameterName}"
-               value="${_csrf.token}"/>
-    </form>
-
+    <button type="button" name="orderStatus" value="DELIVERED">Delivered</button>
+    <button type="button" name="orderStatus" value="REJECTED">Rejected</button>
 </tags:master>

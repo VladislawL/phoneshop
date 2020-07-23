@@ -13,5 +13,5 @@ public interface OrderService {
     List<Order> getOrders();
     Order createOrder(Cart cart);
     void placeOrder(Order order) throws OutOfStockException;
-    void updateOrder(Order order);
+    void updateOrderStatus(Long orderId, OrderStatus orderStatus);
 }

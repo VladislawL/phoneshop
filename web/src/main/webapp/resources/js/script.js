@@ -1,7 +1,4 @@
-$('input[name="add-to-cart"]').on("click", function() {
-    var $this = $(this);
-    var phoneId = $this.data("phoneId");
-    var $quantityField = $("#" + phoneId);
+$(function () {
     var $header = $("meta[name='_csrf_header']").attr("content");
     var $token = $("meta[name='_csrf']").attr("content");
 
@@ -10,6 +7,12 @@ $('input[name="add-to-cart"]').on("click", function() {
             xhr.setRequestHeader($header, $token);
         }
     });
+});
+
+$('input[name="add-to-cart"]').on("click", function() {
+    var $this = $(this);
+    var phoneId = $this.data("phoneId");
+    var $quantityField = $("#" + phoneId);
 
     $.ajax({
         type: "POST",
@@ -34,14 +37,6 @@ $('input[name="add-to-cart"]').on("click", function() {
 $('input[name="delete-cart-item"]').on("click", function() {
     var $this = $(this);
     var phoneId = $this.data("phoneId");
-    var $header = $("meta[name='_csrf_header']").attr("content");
-    var $token = $("meta[name='_csrf']").attr("content");
-
-    $.ajaxSetup({
-        beforeSend: function(xhr) {
-            xhr.setRequestHeader($header, $token);
-        }
-    });
 
     $.ajax({
         type: "DELETE",
@@ -55,6 +50,21 @@ $('input[name="delete-cart-item"]').on("click", function() {
     });
 
     return false;
+});
+
+$('button[name="orderStatus"]').on("click", function () {
+    var $this = $(this);
+    var orderStatus = $this.val();
+
+    $.ajax({
+        type: "PUT",
+        url: window.location,
+        contentType: "application/json",
+        data: JSON.stringify(orderStatus),
+        success: function (status) {
+            $("#order-status").text(status);
+        }
+    })
 });
 
 function updateMiniCart(msg) {

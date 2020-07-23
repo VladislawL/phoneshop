@@ -7,10 +7,12 @@ import com.es.core.services.AttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 @RequestMapping(value = "/admin/orders")
@@ -22,13 +24,13 @@ public class OrdersPageController {
     @Autowired
     private AttributeService attributeService;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @GetMapping
     public String adminPage(Model model) {
         model.addAttribute("orders", orderService.getOrders());
         return "adminPage";
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public String adminOrderPage(@PathVariable(value = "id") Long id, Model model) {
         Order order = orderService.getOrderById(id);
         model.addAttribute("order", order);
@@ -36,13 +38,12 @@ public class OrdersPageController {
         return "adminOrderPage";
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST)
+    @PutMapping(value = "/{id}")
+    @ResponseBody
     public String changeOrderStatus(@PathVariable(value = "id") Long id,
-                                    @RequestParam("orderStatus") OrderStatus orderStatus) {
-        Order order = orderService.getOrderById(id);
-        order.setStatus(orderStatus);
-        orderService.updateOrder(order);
-        return "redirect:/admin/orders/" + id;
+                                    @RequestBody OrderStatus orderStatus) {
+        orderService.updateOrderStatus(id, orderStatus);
+        return orderStatus.toString();
     }
 
 }
