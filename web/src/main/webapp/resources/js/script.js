@@ -55,14 +55,15 @@ $('input[name="delete-cart-item"]').on("click", function() {
 $('button[name="orderStatus"]').on("click", function () {
     var $this = $(this);
     var orderStatus = $this.val();
+    var orderId = $("#orderId").val();
 
     $.ajax({
         type: "PUT",
-        url: window.location,
+        url: contextPath + "/admin/orders/" + orderId,
         contentType: "application/json",
         data: JSON.stringify(orderStatus),
-        success: function (status) {
-            $("#order-status").text(status);
+        success: function () {
+            $("#order-status").text(orderStatus);
         }
     })
 });

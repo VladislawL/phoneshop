@@ -116,6 +116,7 @@
             </div>
         </div>
     </div>
+    <input id="orderId" type="hidden" value="${order.id}" />
     <button type="button" name="orderStatus" value="DELIVERED">Delivered</button>
     <button type="button" name="orderStatus" value="REJECTED">Rejected</button>
 </tags:master>

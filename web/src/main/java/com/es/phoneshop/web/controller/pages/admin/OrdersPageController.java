@@ -5,6 +5,8 @@ import com.es.core.model.order.OrderStatus;
 import com.es.core.order.OrderService;
 import com.es.core.services.AttributeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,10 +42,10 @@ public class OrdersPageController {
 
     @PutMapping(value = "/{id}")
     @ResponseBody
-    public String changeOrderStatus(@PathVariable(value = "id") Long id,
-                                    @RequestBody OrderStatus orderStatus) {
+    public ResponseEntity changeOrderStatus(@PathVariable(value = "id") Long id,
+                                            @RequestBody OrderStatus orderStatus) {
         orderService.updateOrderStatus(id, orderStatus);
-        return orderStatus.toString();
+        return new ResponseEntity(HttpStatus.OK);
     }
 
 }

@@ -21,10 +21,8 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@IntegrationTest
-@RunWith(SpringJUnit4ClassRunner.class)
 @Sql(value = "classpath:db/test-order.sql")
-public class OrdersPageControllerTest  {
+public class OrdersPageControllerTest extends AbstractWebappIntegrationTest {
 
     @Autowired
     private WebApplicationContext context;
