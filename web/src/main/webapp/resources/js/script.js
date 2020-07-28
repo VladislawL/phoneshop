@@ -1,3 +1,14 @@
+$(function () {
+    var $header = $("meta[name='_csrf_header']").attr("content");
+    var $token = $("meta[name='_csrf']").attr("content");
+
+    $.ajaxSetup({
+        beforeSend: function(xhr) {
+            xhr.setRequestHeader($header, $token);
+        }
+    });
+});
+
 $('input[name="add-to-cart"]').on("click", function() {
     var $this = $(this);
     var phoneId = $this.data("phoneId");
@@ -41,6 +52,22 @@ $('input[name="delete-cart-item"]').on("click", function() {
     return false;
 });
 
+$('button[name="orderStatus"]').on("click", function () {
+    var $this = $(this);
+    var orderStatus = $this.val();
+    var orderId = $("#orderId").val();
+
+    $.ajax({
+        type: "PUT",
+        url: contextPath + "/admin/orders/" + orderId,
+        contentType: "application/json",
+        data: JSON.stringify(orderStatus),
+        success: function () {
+            $("#order-status").text(orderStatus);
+        }
+    })
+});
+
 function updateMiniCart(msg) {
     var formatter = new Intl.NumberFormat(navigator.language, {
         style: 'currency',
@@ -48,4 +75,8 @@ function updateMiniCart(msg) {
     });
     $("#items-number").text(msg.miniCart.itemsNumber + " items");
     $("#subtotal-price").text(formatter.format(msg.miniCart.subTotalPrice));
+}
+
+function logoutFormSubmit() {
+    document.getElementById("logoutForm").submit();
 }

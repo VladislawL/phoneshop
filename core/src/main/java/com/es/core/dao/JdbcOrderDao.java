@@ -56,6 +56,8 @@ public class JdbcOrderDao implements OrderDao {
     private static final String DELETE_ORDER_ITEM_BY_UUID_QUERY = "delete from orderItems where orderId = (select id " +
             "from orders where uuid = :uuid)";
 
+    private static final String SELECT_ALL_ORDERS_QUERY = "select * from orders";
+
     @Override
     public Optional<Order> getOrderByUUID(UUID uuid) {
         try {
@@ -74,6 +76,19 @@ public class JdbcOrderDao implements OrderDao {
         } catch (DataAccessException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Order> getOrders() {
+        List<Order> orders = namedParameterJdbcTemplate.query(SELECT_ALL_ORDERS_QUERY, orderRowMapper);
+
+        for (Order order : orders) {
+            Map<String, Object> idParameter = Collections.singletonMap("id", order.getId());
+            List<OrderItem> orderItems = namedParameterJdbcTemplate.query(SELECT_ORDER_ITEM_BY_ORDER_ID_QUERY, idParameter, orderItemRowMapper);
+            order.setOrderItems(orderItems);
+        }
+
+        return orders;
     }
 
     private Optional<Order> getOrder(Map<String, Object> parameter, String selectOrderQuery, String selectOrderItemQuery) {
@@ -132,7 +147,7 @@ public class JdbcOrderDao implements OrderDao {
         parameters.addValue("subtotal", order.getSubtotal());
         parameters.addValue("deliveryPrice", order.getDeliveryPrice());
         parameters.addValue("totalPrice", order.getTotalPrice());
-        parameters.addValue("status", order.getStatus().name());
+        parameters.addValue("status", order.getStatus().name().toLowerCase());
         return parameters;
     }
 
