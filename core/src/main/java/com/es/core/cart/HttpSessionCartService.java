@@ -7,6 +7,7 @@ import com.es.core.services.StockService;
 import com.es.core.validators.QuantityValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.Errors;
 
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class HttpSessionCartService implements CartService {
 
     private static final String NOT_ENOUGH_STOCK_CODE = "quantity.greaterThanStock";
 
+    private static final String CART_ITEM_QUANTITY_FIELD = "cartItems[%s].quantity";
+    private static final String CART_ITEM_PHONE_ID_FIELD = "cartItems[%s].phoneId";
+
     @Override
     public Cart getCart() {
         return cart;
@@ -45,6 +49,21 @@ public class HttpSessionCartService implements CartService {
         addOrUpdateCartItem(cartItem, phoneId, quantity);
 
         priceCalculatorService.calculateCart(cart);
+    }
+
+    @Override
+    public void addCartItems(List<CartItem> cartItems, Errors errors) {
+        int i = 0;
+        for (CartItem cartItem : cartItems) {
+            if (errors.getFieldError(String.format(CART_ITEM_PHONE_ID_FIELD, i)) == null &&
+                    errors.getFieldError(String.format(CART_ITEM_QUANTITY_FIELD, i)) == null) {
+                Optional<CartItem> optionalCartItem = findCartItem(cartItem.getPhoneId());
+                addOrUpdateCartItem(optionalCartItem, cartItem.getPhoneId(), cartItem.getQuantity());
+                cartItem.setPhoneId(0);
+                cartItem.setQuantity(0);
+            }
+            i++;
+        }
     }
 
     @Override
